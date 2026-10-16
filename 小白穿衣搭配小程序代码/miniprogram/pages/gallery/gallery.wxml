@@ -1,0 +1,51 @@
+<view class="page-container">
+  <!-- 工具栏 -->
+  <view class="toolbar" wx:if="{{!empty}}">
+    <view class="manage-btn {{managing ? 'manage-btn-active' : ''}}" bindtap="onToggleManage">管理</view>
+    <view class="confirm-btn" wx:if="{{managing}}" bindtap="onConfirmDelete">删除</view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{empty}}">
+    <text class="empty-icon">📷</text>
+    <text class="empty-text">还没有打卡记录，快去记录今日穿搭吧</text>
+  </view>
+
+  <!-- 瀑布流 -->
+  <view class="waterfall" wx:else>
+    <view class="waterfall-col">
+      <view
+        class="gallery-card {{item.selected ? 'gallery-card-selected' : ''}}"
+        wx:for="{{leftList}}"
+        wx:key="date"
+        data-date="{{item.date}}"
+        bindtap="onSelectItem"
+      >
+        <view class="check-circle {{item.selected ? 'check-circle-active' : ''}}" wx:if="{{managing}}">✓</view>
+        <image class="gallery-img" src="{{item.imagePath}}" mode="widthFix" />
+        <view class="gallery-info">
+          <text class="gallery-date">{{item.date}}</text>
+          <text class="gallery-weather">{{item.weather.icon}} {{item.weather.text}} {{item.weather.temp}}°</text>
+          <text class="gallery-outfit">{{item.outfit.top}} · {{item.outfit.bottom}} · {{item.outfit.shoes}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="waterfall-col">
+      <view
+        class="gallery-card {{item.selected ? 'gallery-card-selected' : ''}}"
+        wx:for="{{rightList}}"
+        wx:key="date"
+        data-date="{{item.date}}"
+        bindtap="onSelectItem"
+      >
+        <view class="check-circle {{item.selected ? 'check-circle-active' : ''}}" wx:if="{{managing}}">✓</view>
+        <image class="gallery-img" src="{{item.imagePath}}" mode="widthFix" />
+        <view class="gallery-info">
+          <text class="gallery-date">{{item.date}}</text>
+          <text class="gallery-weather">{{item.weather.icon}} {{item.weather.text}} {{item.weather.temp}}°</text>
+          <text class="gallery-outfit">{{item.outfit.top}} · {{item.outfit.bottom}} · {{item.outfit.shoes}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

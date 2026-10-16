@@ -3,3 +3,4 @@ miniprogram_npm/
 .DS_Store
 *.log
 project.private.config.json
+.codebuddy/

@@ -1,0 +1,38 @@
+/** 全局样式 · 温暖极简 / 治愈系 */
+page {
+  background: #FFF9F5;
+  color: #1F2937;
+  font-size: 30rpx;
+  font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 通用圆角卡片 */
+.card {
+  background: #FFFFFF;
+  border-radius: 28rpx;
+  padding: 32rpx;
+  box-shadow: 0 8rpx 32rpx rgba(245, 158, 11, 0.08);
+}
+
+/* 主按钮 */
+.btn-primary {
+  background: linear-gradient(135deg, #F59E0B, #FB923C);
+  color: #FFFFFF;
+  border-radius: 44rpx;
+  border: none;
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 88rpx;
+}
+
+.btn-primary::after {
+  border: none;
+}
+
+/* 页面通用容器 */
+.page-container {
+  padding: 24rpx 32rpx 48rpx;
+  box-sizing: border-box;
+}

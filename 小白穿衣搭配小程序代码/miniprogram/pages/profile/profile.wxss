@@ -1,0 +1,159 @@
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1F2937;
+}
+
+/* 卡片头部（标题 + 编辑/保存按钮） */
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.edit-btn {
+  font-size: 28rpx;
+  color: #F59E0B;
+  font-weight: 500;
+  padding: 4rpx 8rpx;
+}
+
+/* 查看模式 */
+.info-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #FFF4EC;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  width: 100rpx;
+  font-size: 28rpx;
+  color: #6B7280;
+  flex-shrink: 0;
+}
+
+.info-value {
+  flex: 1;
+  font-size: 28rpx;
+  color: #1F2937;
+}
+
+/* 编辑模式 */
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #FFF4EC;
+}
+
+.form-item-gender {
+  align-items: flex-start;
+  flex-direction: column;
+  border-bottom: none;
+}
+
+.form-label {
+  width: 100rpx;
+  font-size: 28rpx;
+  color: #6B7280;
+  flex-shrink: 0;
+}
+
+.form-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: #1F2937;
+}
+
+.picker-value {
+  flex: 1;
+  font-size: 28rpx;
+  color: #1F2937;
+}
+
+.picker-placeholder {
+  color: #9CA3AF;
+}
+
+.gender-group {
+  display: flex;
+  margin-top: 16rpx;
+}
+
+.gender-tag {
+  padding: 12rpx 44rpx;
+  border-radius: 40rpx;
+  background: #FFF4EC;
+  color: #6B7280;
+  font-size: 28rpx;
+  margin-right: 24rpx;
+}
+
+.gender-tag-active {
+  background: linear-gradient(135deg, #F59E0B, #FB923C);
+  color: #FFFFFF;
+}
+
+.save-btn {
+  margin-top: 32rpx;
+  width: 100%;
+}
+
+/* 鼓励语卡片 */
+.encourage-card {
+  background: linear-gradient(135deg, #FFF4EC, #FFFFFF);
+  border-radius: 28rpx;
+  padding: 40rpx 36rpx;
+  margin: 24rpx 0;
+  text-align: center;
+}
+
+.encourage-text {
+  font-size: 28rpx;
+  color: #F59E0B;
+  line-height: 1.8;
+  font-weight: 500;
+}
+
+/* 反馈 */
+.feedback-input {
+  width: 100%;
+  height: 160rpx;
+  background: #FFF9F5;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  color: #1F2937;
+}
+
+/* 风采库入口 */
+.gallery-entry {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.gallery-entry-icon {
+  font-size: 40rpx;
+  margin-right: 16rpx;
+}
+
+.gallery-entry-text {
+  flex: 1;
+  font-size: 28rpx;
+  color: #1F2937;
+  font-weight: 500;
+}
+
+.gallery-entry-days {
+  font-size: 26rpx;
+  color: #F59E0B;
+  font-weight: 600;
+}

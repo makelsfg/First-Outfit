@@ -1,0 +1,78 @@
+<view class="page-container">
+  <!-- 加载态 -->
+  <view class="loading" wx:if="{{loading}}">正在为你搭配…</view>
+
+  <block wx:else>
+    <!-- 天气卡片 -->
+    <view class="weather-card">
+      <view class="weather-left">
+        <view class="city">{{weather.city}} · {{dateText}}</view>
+        <view class="temp-row">
+          <text class="temp">{{weather.temp}}°</text>
+          <text class="feels">体感 {{weather.feelsLike}}°</text>
+        </view>
+      </view>
+      <view class="weather-right">
+        <text class="weather-icon">{{weather.icon}}</text>
+        <text class="weather-text">{{weather.text}}</text>
+      </view>
+    </view>
+
+    <!-- 穿搭方案 -->
+    <view class="card">
+      <view class="section-title">今天这样穿</view>
+      <view class="outfit-item">
+        <text class="outfit-label">上衣</text>
+        <text class="outfit-value">{{outfit.top}}</text>
+      </view>
+      <view class="outfit-item" wx:if="{{outfit.inner}}">
+        <text class="outfit-label">内搭</text>
+        <text class="outfit-value">{{outfit.inner}}</text>
+      </view>
+      <view class="outfit-item">
+        <text class="outfit-label">裤子</text>
+        <text class="outfit-value">{{outfit.bottom}}</text>
+      </view>
+      <view class="outfit-item">
+        <text class="outfit-label">鞋子</text>
+        <text class="outfit-value">{{outfit.shoes}}</text>
+      </view>
+    </view>
+
+    <!-- 打卡按钮 -->
+    <view class="checkin-btn {{checkedToday ? 'checkin-btn-done' : ''}}" bindtap="onCheckin">
+      <text>{{checkedToday ? '✅ 今日已打卡' : '📷 记录今日穿搭'}}</text>
+    </view>
+
+    <!-- 为什么这样穿 -->
+    <view class="card">
+      <view class="section-title">为什么这样穿</view>
+      <text class="reason-text">{{outfit.reason}}</text>
+    </view>
+
+    <!-- 特殊天气提醒 -->
+    <view class="card" wx:if="{{outfit.tips.length > 0}}">
+      <view class="section-title">小提醒</view>
+      <view class="tip-item" wx:for="{{outfit.tips}}" wx:key="*this">
+        <text class="tip-dot">·</text>
+        <text class="tip-text">{{item}}</text>
+      </view>
+    </view>
+  </block>
+
+  <!-- 弹窗1：上传成功提示 -->
+  <view class="toast-mask" wx:if="{{phase === 'toast'}}">
+    <view class="toast-card {{toastFading ? 'toast-fading' : ''}}">
+      <text class="toast-text">上传成功，上传的照片可以在【我的】-【个人每日风采库】里面查看。</text>
+    </view>
+  </view>
+
+  <!-- 弹窗2：鼓励语 -->
+  <view class="encourage-mask" wx:if="{{phase === 'encourage'}}">
+    <view class="encourage-card">
+      <text class="encourage-title">今天也超棒的</text>
+      <text class="encourage-content">{{encouragementText}}</text>
+      <view class="encourage-btn" bindtap="onConfirmEncourage">确定</view>
+    </view>
+  </view>
+</view>

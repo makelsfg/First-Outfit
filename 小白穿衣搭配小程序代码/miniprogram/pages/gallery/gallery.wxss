@@ -1,0 +1,129 @@
+/* 工具栏 */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 16rpx;
+}
+
+.manage-btn {
+  font-size: 26rpx;
+  color: #6B7280;
+  padding: 8rpx 28rpx;
+  border-radius: 32rpx;
+  background: #FFFFFF;
+}
+
+.manage-btn-active {
+  color: #F59E0B;
+  font-weight: 600;
+}
+
+.confirm-btn {
+  margin-left: 16rpx;
+  font-size: 26rpx;
+  color: #FFFFFF;
+  padding: 8rpx 32rpx;
+  border-radius: 32rpx;
+  background: linear-gradient(135deg, #F59E0B, #FB923C);
+  font-weight: 600;
+}
+
+/* 瀑布流 */
+.waterfall {
+  display: flex;
+  align-items: flex-start;
+}
+
+.waterfall-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.waterfall-col:first-child {
+  margin-right: 16rpx;
+}
+
+.gallery-card {
+  position: relative;
+  background: #FFFFFF;
+  border-radius: 20rpx;
+  overflow: hidden;
+  margin-bottom: 16rpx;
+  box-shadow: 0 8rpx 24rpx rgba(245, 158, 11, 0.08);
+}
+
+.gallery-card-selected {
+  box-shadow: 0 0 0 4rpx #F59E0B, 0 8rpx 24rpx rgba(245, 158, 11, 0.2);
+}
+
+/* 勾选圈 */
+.check-circle {
+  position: absolute;
+  top: 12rpx;
+  left: 12rpx;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  border: 3rpx solid #FFFFFF;
+  background: rgba(0, 0, 0, 0.3);
+  color: #FFFFFF;
+  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.check-circle-active {
+  background: #F59E0B;
+  border-color: #F59E0B;
+}
+
+.gallery-img {
+  width: 100%;
+  display: block;
+}
+
+.gallery-info {
+  padding: 16rpx 20rpx 20rpx;
+}
+
+.gallery-date {
+  display: block;
+  font-size: 24rpx;
+  color: #6B7280;
+  margin-bottom: 8rpx;
+}
+
+.gallery-weather {
+  display: block;
+  font-size: 24rpx;
+  color: #6B7280;
+  margin-bottom: 4rpx;
+}
+
+.gallery-outfit {
+  display: block;
+  font-size: 24rpx;
+  color: #1F2937;
+  font-weight: 500;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 160rpx 0;
+}
+
+.empty-icon {
+  font-size: 88rpx;
+  margin-bottom: 24rpx;
+}
+
+.empty-text {
+  color: #9CA3AF;
+  font-size: 28rpx;
+}

@@ -1,0 +1,44 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/search/search",
+    "pages/profile/profile",
+    "pages/gallery/gallery"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#FFF9F5",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "小白穿衣",
+    "backgroundColor": "#FFF9F5",
+    "backgroundTextStyle": "light"
+  },
+  "tabBar": {
+    "color": "#9CA3AF",
+    "selectedColor": "#F59E0B",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/home",
+        "text": "今日推荐"
+      },
+      {
+        "pagePath": "pages/search/search",
+        "text": "搜索"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于获取当地天气，为你推荐合适的穿搭"
+    }
+  },
+  "requiredPrivateInfos": ["getLocation"]
+}

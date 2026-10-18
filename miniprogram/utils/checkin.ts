@@ -1,58 +1,77 @@
-// 打卡数据服务（本地存储版）
-// 将来切换云开发：仅替换本文件内部实现（setStorageSync → 云数据库，saveFile → 云存储）
-
+// 打卡数据服务（云开发版：云数据库 checkin_records + 云存储图片）
 import type { WeatherInfo, OutfitResult } from './outfitRules'
+import { CLOUD_ENV } from './config'
 
 export interface CheckinRecord {
+  _id?: string
   date: string          // YYYY-MM-DD
-  imagePath: string     // wx.saveFile 返回的持久本地路径
+  imageFileID: string   // 云存储 fileID
   weather: WeatherInfo
   outfit: OutfitResult
   createTime: number
 }
 
-const KEY = 'checkinRecords'
+const COLLECTION = 'checkin_records'
+
+function collection() {
+  return wx.cloud.database({ env: CLOUD_ENV }).collection(COLLECTION)
+}
 
 export function formatDate(date: Date): string {
   const pad = (n: number) => (n < 10 ? '0' + n : '' + n)
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
 }
 
-function load(): CheckinRecord[] {
-  const cached = wx.getStorageSync<CheckinRecord[]>(KEY)
-  return Array.isArray(cached) ? cached : []
-}
-
-function save(list: CheckinRecord[]): void {
-  wx.setStorageSync(KEY, list)
-}
-
 /** 当天是否已打卡 */
-export function hasCheckedToday(date: string): boolean {
-  return load().some((r) => r.date === date)
+export async function hasCheckedToday(date: string): Promise<boolean> {
+  const res = await collection().where({ date }).count()
+  return res.total > 0
 }
 
 /** 新增一条打卡记录（同一天去重，只保留最新） */
-export function addCheckin(record: CheckinRecord): void {
-  const list = load()
-  const filtered = list.filter((r) => r.date !== record.date)
-  filtered.unshift(record)
-  save(filtered)
+export async function addCheckin(record: Omit<CheckinRecord, '_id'>): Promise<void> {
+  const dbc = collection()
+  const oldRes = await dbc.where({ date: record.date }).get()
+  const olds = oldRes.data as CheckinRecord[]
+  for (const item of olds) {
+    if (item._id) {
+      await dbc.doc(item._id).remove()
+    }
+    if (item.imageFileID) {
+      try {
+        await wx.cloud.deleteFile({ fileList: [item.imageFileID], config: { env: CLOUD_ENV } })
+      } catch (e) {
+        // 忽略旧文件删除失败
+      }
+    }
+  }
+  await dbc.add({ data: record })
 }
 
-/** 获取历史打卡列表（按时间倒序） */
-export function listCheckins(): CheckinRecord[] {
-  return load().sort((a, b) => b.createTime - a.createTime)
+/** 获取历史打卡列表（按时间倒序，最多 100 条） */
+export async function listCheckins(): Promise<CheckinRecord[]> {
+  const res = await collection().orderBy('createTime', 'desc').limit(100).get()
+  return res.data as CheckinRecord[]
 }
 
 /** 累计打卡天数（不同日期各算一天） */
-export function countCheckinDays(): number {
-  const days = new Set(load().map((r) => r.date))
-  return days.size
+export async function countCheckinDays(): Promise<number> {
+  const res = await collection().count()
+  return res.total
 }
 
-/** 批量删除指定日期的打卡记录 */
-export function removeCheckins(dates: string[]): void {
-  const list = load().filter((r) => dates.indexOf(r.date) < 0)
-  save(list)
+/** 批量删除打卡记录与云存储文件 */
+export async function removeCheckins(ids: string[], fileIDs: string[]): Promise<void> {
+  const dbc = collection()
+  for (const id of ids) {
+    await dbc.doc(id).remove()
+  }
+  const validFiles = fileIDs.filter(Boolean)
+  if (validFiles.length > 0) {
+    try {
+      await wx.cloud.deleteFile({ fileList: validFiles, config: { env: CLOUD_ENV } })
+    } catch (e) {
+      // 忽略文件删除失败
+    }
+  }
 }

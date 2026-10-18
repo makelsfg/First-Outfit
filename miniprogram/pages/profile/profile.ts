@@ -25,8 +25,13 @@ Page({
     })
   },
 
-  onShow() {
-    this.setData({ checkinDays: countCheckinDays() })
+  async onShow() {
+    try {
+      const days = await countCheckinDays()
+      this.setData({ checkinDays: days })
+    } catch (e) {
+      this.setData({ checkinDays: 0 })
+    }
   },
 
   onGoGallery() {

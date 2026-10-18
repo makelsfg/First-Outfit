@@ -40,6 +40,7 @@
 * 首页点击「记录今日穿搭」，拍照或从相册选图完成打卡
 * 打卡成功后触发**双重弹窗**：先弹出上传成功提示（1.5 秒后缓缓淡出），紧接着弹出随机鼓励语（放大动画，点击「确定」关闭）
 * 当日打卡后按钮变为「今日已打卡」并禁用，次日恢复可打卡
+* 打卡记录与照片存于**云端**，换设备不丢失
 
 ### 3. 个人每日风采库
 
@@ -83,9 +84,10 @@
 
 * 微信小程序原生开发 + TypeScript
 * 微信开发者工具
-* 天气 API：高德开放平台（定位逆地理编码 + 实时天气）
-* 大模型 API：阿里云百炼 DashScope（OpenAI 兼容接口，模型 `deepseek-v4.1-flash`）
-* 数据存储：本地存储（`wx.setStorageSync` / `wx.saveFile`）
+* 后端：微信云开发（云数据库 + 云存储 + 云函数）
+* 天气 API：高德开放平台（定位逆地理编码 + 实时天气），经云函数代理
+* 大模型 API：阿里云百炼 DashScope（OpenAI 兼容接口，模型 `deepseek-v4.1-flash`），经云函数代理
+* 数据存储：打卡记录存云数据库，照片存云存储；个人信息与搜索历史存本地
 * Git / GitHub 版本管理
 
 ## 项目结构
@@ -101,16 +103,21 @@
 │   │   ├── profile/        我的（个人信息 + 风采库入口）
 │   │   └── gallery/        个人每日风采库（瀑布流 + 管理删除）
 │   └── utils/              # 服务层（数据与业务逻辑）
-│       ├── config.ts          常量与 API 配置
+│       ├── config.ts          云环境与常量配置（不含任何密钥）
 │       ├── outfitRules.ts     穿搭规则引擎（温度/天气 → 穿搭方案）
-│       ├── weather.ts         天气服务（高德定位 + 实时天气）
-│       ├── llm.ts             大模型服务（DashScope）
-│       ├── checkin.ts         打卡数据服务
-│       ├── encouragement.ts   鼓励语文案
-│       └── storage.ts         本地缓存封装
+│       ├── weather.ts         天气服务（调用 getWeather 云函数）
+│       ├── llm.ts             大模型服务（调用 askLLM 云函数）
+│       ├── checkin.ts         打卡数据服务（云数据库 + 云存储）
+│       ├── encouragement.ts   鼓励语文案（云端优先 + 内置兜底）
+│       └── storage.ts         个人信息本地缓存
+│
+├── cloudfunctions/         # ===== 后端（云函数）=====
+│   ├── initData/           初始化数据库集合与鼓励语文案库
+│   ├── getWeather/         代理高德定位与天气查询（隐藏 Key）
+│   └── askLLM/             代理大模型问答（隐藏 Key）
 │
 ├── typings/                # 微信 API 类型声明
-├── project.config.json     # 项目配置
+├── project.config.json     # 项目配置（含 cloudfunctionRoot）
 ├── tsconfig.json
 └── package.json
 ```
@@ -119,22 +126,35 @@
 
 | 层 | 位置 | 职责 | 现状 |
 |---|---|---|---|
-| **前端** | `miniprogram/` | 页面渲染、穿搭规则引擎、数据与服务封装 | 已完成 |
-| **后端** | 暂无独立目录 | 数据持久化、密钥保护、跨设备同步 | 打卡/搜索/个人信息存**本地**；天气与大模型由前端直连第三方 API |
+| **前端** | `miniprogram/` | 页面渲染、穿搭规则引擎、数据服务封装 | 已完成 |
+| **后端** | `cloudfunctions/` + 云开发 | 数据持久化、文件存储、第三方 API 代理（隐藏密钥） | `initData` / `getWeather` / `askLLM` 云函数 + 2 个集合 + 云存储 |
 
-> 说明：出于「先本地跑通、暂不上云」的策略，当前**未拆分出独立后端服务**。`utils/` 下的数据服务（`weather.ts` / `llm.ts` / `checkin.ts`）已做接口抽象，后续接入微信云开发时，只需替换其内部实现为云函数调用，页面代码无需改动。
+**数据流**：
+- 打卡记录 → 云数据库 `checkin_records`；照片 → 云存储
+- 鼓励语 → 云数据库 `encouragement_library`（读不到时用内置 10 条兜底）
+- 天气 → 云函数 `getWeather`（高德 Key 保存在服务端）
+- 大模型问答 → 云函数 `askLLM`（DashScope Key 保存在服务端）
+- 个人信息、搜索历史 → 本地存储
 
 ## 运行说明
 
 1. 从浏览器下载并安装「微信开发者工具」：https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html
 2. 打开微信开发者工具，点「导入项目」，目录选择项目根目录 `项目-小白穿衣推荐`（即含 `project.config.json` 的那一层）
-3. 右上角「详情」→「本地设置」→ 勾选「**不校验合法域名、web-view（业务域名）、TLS 版本以及 HTTPS 证书**」（否则无法请求天气与大模型接口）
-4. 在 `miniprogram/utils/config.ts` 中配置 API key：
-   - `AMAP_KEY`：高德开放平台「Web服务」类型的 key
-   - `DASHSCOPE_KEY`：阿里云百炼 DashScope 的 API Key
-5. 编译运行
+3. 开通云开发（如未开通）：微信开发者工具点「云开发」→ 开通并创建环境，将环境 ID 填入 `miniprogram/utils/config.ts` 的 `CLOUD_ENV`
+4. 部署 3 个云函数：在文件树分别右键 `cloudfunctions/initData`、`getWeather`、`askLLM` →「**上传并部署：云端安装依赖**」
+5. 设置数据库权限（云开发控制台 → 数据库）：
+   - `checkin_records` →「仅创建者可读写」
+   - `encouragement_library` →「所有用户可读」
+6. 编译运行（启动时 `app.ts` 会自动调用 `initData` 创建集合并写入文案）
+
+## 上线说明
+
+1. 开发者工具点右上角「**上传**」，填写版本号（如 1.0.0）
+2. 小程序后台（mp.weixin.qq.com）→「管理」→「版本管理」→ 提交审核
+3. 提交前需完成：**用户隐私保护指引**（声明位置信息、摄像头、相册用途）
+4. 审核通过后点「发布」
 
 ## 已知限制
 
-* 打卡数据与照片存**本地**，清除缓存或更换设备后会丢失（后续可升级为云开发保存）
-* API key 目前**明文写在前端** `config.ts` 中，仅用于开发调试；正式上线前需迁移到后端（如云函数）隐藏，并重新生成 key
+* 打卡数据与照片存**云端**，换设备、清缓存都不会丢失；云开发为付费服务，体验版额度有限，超出需按量付费
+* 天气与大模型的 API Key 保存在**云函数**中，前端不包含任何密钥；如需更规范的密钥管理，可在云开发控制台为云函数配置「环境变量」覆盖代码中的默认值

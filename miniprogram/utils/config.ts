@@ -1,4 +1,9 @@
 // 全局常量配置
+// 注意：天气与大模型的 API Key 已迁移到云函数（cloudfunctions/getWeather、askLLM），
+// 前端不再保存任何密钥。
+
+// ---------- 微信云开发 ----------
+export const CLOUD_ENV = 'kaifa-d1gyijyx99ac64783'
 
 /** 默认城市（定位失败时的兜底） */
 export const DEFAULT_CITY = '北京'
@@ -13,13 +18,3 @@ export const THEME = {
   secondary: '#FB923C',
   bg: '#FFF9F5',
 }
-
-// ---------- 高德 API（开发阶段前端直连，上线前必须迁移到后端隐藏 key） ----------
-export const AMAP_KEY = '246507c7dd16d8b42f6aa6ddc778a480'
-export const AMAP_WEATHER_URL = 'https://restapi.amap.com/v3/weather/weatherInfo'
-export const AMAP_REGEO_URL = 'https://restapi.amap.com/v3/geocode/regeo'
-
-// ---------- 大模型 API（阿里云百炼 DashScope，OpenAI 兼容） ----------
-export const DASHSCOPE_KEY = 'sk-ws-H.PPDPMPL.ysa8.MEUCIFSvr-dQxCQ83BMkrnzPxLiIH4nC633LP_R1mzsHP3DUAiEAgDOp3bUCBWZQ87FkdiLpwFPiPEx42CkxChH16TDeGYE'
-export const DASHSCOPE_URL = 'https://dashscope.aliyuncs.com/compatible-mode/v1'
-export const LLM_MODEL = 'deepseek-v4.1-flash'

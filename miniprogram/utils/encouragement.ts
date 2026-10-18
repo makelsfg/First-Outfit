@@ -1,7 +1,7 @@
-// 鼓励语服务（本地版：内置10条随机文案）
-// 将来接云开发：改为读 encouragement_library 集合随机抽取
+// 鼓励语服务：优先从云数据库 encouragement_library 随机读取，失败用内置文案兜底
+import { CLOUD_ENV } from './config'
 
-const ENCOURAGEMENTS = [
+const FALLBACKS = [
   '今日份的帅气已存档，继续保持！',
   '穿搭没你想得那么难，你已经迈出了一大步。',
   '认真穿衣的你，真的在闪闪发光。',
@@ -14,7 +14,23 @@ const ENCOURAGEMENTS = [
   '不着急，好看的你会一点一点练出来的。',
 ]
 
-export function getRandomEncouragement(): string {
-  const index = Math.floor(Math.random() * ENCOURAGEMENTS.length)
-  return ENCOURAGEMENTS[index]
+export async function getRandomEncouragement(): Promise<string> {
+  try {
+    const res = await wx.cloud
+      .database({ env: CLOUD_ENV })
+      .collection('encouragement_library')
+      .get()
+    const list = res.data as Array<{ content?: string }>
+    if (list.length > 0) {
+      const index = Math.floor(Math.random() * list.length)
+      const content = list[index].content
+      if (content) {
+        return content
+      }
+    }
+  } catch (e) {
+    // 读库失败，走内置兜底
+  }
+  const index = Math.floor(Math.random() * FALLBACKS.length)
+  return FALLBACKS[index]
 }

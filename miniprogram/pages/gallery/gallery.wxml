@@ -22,7 +22,7 @@
         bindtap="onSelectItem"
       >
         <view class="check-circle {{item.selected ? 'check-circle-active' : ''}}" wx:if="{{managing}}">✓</view>
-        <image class="gallery-img" src="{{item.imagePath}}" mode="widthFix" />
+        <image class="gallery-img" src="{{item.imageUrl}}" mode="widthFix" />
         <view class="gallery-info">
           <text class="gallery-date">{{item.date}}</text>
           <text class="gallery-weather">{{item.weather.icon}} {{item.weather.text}} {{item.weather.temp}}°</text>
@@ -39,7 +39,7 @@
         bindtap="onSelectItem"
       >
         <view class="check-circle {{item.selected ? 'check-circle-active' : ''}}" wx:if="{{managing}}">✓</view>
-        <image class="gallery-img" src="{{item.imagePath}}" mode="widthFix" />
+        <image class="gallery-img" src="{{item.imageUrl}}" mode="widthFix" />
         <view class="gallery-info">
           <text class="gallery-date">{{item.date}}</text>
           <text class="gallery-weather">{{item.weather.icon}} {{item.weather.text}} {{item.weather.temp}}°</text>

@@ -1,5 +1,7 @@
-// 搜索页：大模型问答（第一阶段本地示例回答）+ 历史记录
+// 搜索页：大模型问答 + 历史记录
 import { askDress, getDefaultSearch } from '../../utils/llm'
+import { getWeather, getFallbackWeather } from '../../utils/weather'
+import type { WeatherInfo } from '../../utils/outfitRules'
 import {
   getSearchHistory,
   addSearchHistory,
@@ -33,20 +35,32 @@ Page({
     this.setData({ query: e.detail.value })
   },
 
-  onSearch() {
+  async onSearch() {
     const query = this.data.query.trim()
     if (!query) {
       wx.showToast({ title: '先输入想问的问题吧', icon: 'none' })
       return
     }
     this.setData({ loading: true, answer: '' })
-    askDress(query)
-      .then((answer) => {
-        this.finishSearch(query, answer)
-      })
-      .catch(() => {
-        this.finishSearch(query, '抱歉，暂时没能回答你，请检查网络后重试。')
-      })
+    try {
+      // 先获取当前城市与天气，作为上下文传给大模型，避免它瞎猜季节和城市
+      let weather: WeatherInfo
+      try {
+        weather = await getWeather()
+      } catch {
+        weather = getFallbackWeather()
+      }
+      const answer = await askDress(query, weather)
+      this.finishSearch(query, answer)
+    } catch (e) {
+      console.error('[search] 大模型调用失败：', e)
+      const err = e as { errMsg?: string; message?: string }
+      const detail = (err && (err.errMsg || err.message)) || ''
+      this.finishSearch(
+        query,
+        '抱歉，暂时没能回答你，请检查网络后重试。' + (detail ? `（${detail}）` : '')
+      )
+    }
   },
 
   finishSearch(query: string, answer: string) {

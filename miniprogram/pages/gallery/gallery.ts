@@ -1,8 +1,17 @@
-// 个人每日风采库：瀑布流照片墙 + 管理批量删除
+// 个人每日风采库：瀑布流照片墙 + 管理批量删除（云开发版）
 import { listCheckins, removeCheckins } from '../../utils/checkin'
 import type { CheckinRecord } from '../../utils/checkin'
+import type { WeatherInfo, OutfitResult } from '../../utils/outfitRules'
+import { CLOUD_ENV } from '../../utils/config'
 
-interface GalleryItem extends CheckinRecord {
+interface GalleryItem {
+  _id?: string
+  date: string
+  imageFileID: string
+  imageUrl: string
+  weather: WeatherInfo
+  outfit: OutfitResult
+  createTime: number
   selected: boolean
 }
 
@@ -10,26 +19,60 @@ Page({
   data: {
     leftList: [] as GalleryItem[],
     rightList: [] as GalleryItem[],
+    records: [] as GalleryItem[],
     empty: true,
     managing: false,
     selected: [] as string[],
   },
 
-  onShow() {
-    this.refresh()
+  async onShow() {
+    await this.refresh()
   },
 
-  refresh() {
-    this.applySelection(listCheckins(), [])
+  async refresh() {
+    try {
+      const records: CheckinRecord[] = await listCheckins()
+      // 云存储 fileID 批量换取临时可访问链接
+      const fileIDs = records.map((r) => r.imageFileID).filter(Boolean)
+      const urlMap: Record<string, string> = {}
+      if (fileIDs.length > 0) {
+        try {
+          const res = await wx.cloud.getTempFileURL({
+            fileList: fileIDs,
+            config: { env: CLOUD_ENV },
+          })
+          res.fileList.forEach((f) => {
+            if (f.tempFileURL) {
+              urlMap[f.fileID] = f.tempFileURL
+            }
+          })
+        } catch (e) {
+          // 获取临时链接失败时图片留空
+        }
+      }
+      const items: GalleryItem[] = records.map((r) => ({
+        _id: r._id,
+        date: r.date,
+        imageFileID: r.imageFileID,
+        imageUrl: urlMap[r.imageFileID] || '',
+        weather: r.weather,
+        outfit: r.outfit,
+        createTime: r.createTime,
+        selected: false,
+      }))
+      this.setData({ records: items, empty: items.length === 0 })
+      this.buildColumns()
+    } catch (e) {
+      this.setData({ records: [], empty: true })
+      this.buildColumns()
+    }
   },
 
-  applySelection(records: CheckinRecord[], selected: string[]) {
-    const items: GalleryItem[] = records.map((r) => ({
-      date: r.date,
-      imagePath: r.imagePath,
-      weather: r.weather,
-      outfit: r.outfit,
-      createTime: r.createTime,
+  /** 根据 records + selected 重新生成左右两列 */
+  buildColumns() {
+    const selected = this.data.selected
+    const items = this.data.records.map((r) => ({
+      ...r,
       selected: selected.indexOf(r.date) >= 0,
     }))
     const leftList: GalleryItem[] = []
@@ -41,17 +84,12 @@ Page({
         rightList.push(item)
       }
     })
-    this.setData({
-      leftList,
-      rightList,
-      empty: records.length === 0,
-    })
+    this.setData({ leftList, rightList })
   },
 
   onToggleManage() {
-    const managing = !this.data.managing
-    this.setData({ managing, selected: [] })
-    this.applySelection(listCheckins(), [])
+    this.setData({ managing: !this.data.managing, selected: [] })
+    this.buildColumns()
   },
 
   onSelectItem(e: WechatMiniprogram.TouchEvent) {
@@ -67,7 +105,7 @@ Page({
       selected.push(date)
     }
     this.setData({ selected })
-    this.applySelection(listCheckins(), selected)
+    this.buildColumns()
   },
 
   onConfirmDelete() {
@@ -89,22 +127,21 @@ Page({
     })
   },
 
-  deleteSelected() {
+  async deleteSelected() {
     const selected = this.data.selected
-    // 尽力删除本地照片文件（失败不影响记录删除）
-    const fsm = wx.getFileSystemManager()
-    listCheckins().forEach((r) => {
-      if (selected.indexOf(r.date) >= 0 && r.imagePath) {
-        try {
-          fsm.unlink({ filePath: r.imagePath, fail: () => {} })
-        } catch (e) {
-          // 忽略文件删除失败
-        }
-      }
-    })
-    removeCheckins(selected)
-    this.setData({ managing: false, selected: [] })
-    this.refresh()
-    wx.showToast({ title: '已删除', icon: 'success' })
+    const toDelete = this.data.records.filter((r) => selected.indexOf(r.date) >= 0)
+    const ids = toDelete.map((r) => r._id).filter(Boolean) as string[]
+    const fileIDs = toDelete.map((r) => r.imageFileID).filter(Boolean)
+    wx.showLoading({ title: '删除中…', mask: true })
+    try {
+      await removeCheckins(ids, fileIDs)
+      wx.hideLoading()
+      this.setData({ managing: false, selected: [] })
+      await this.refresh()
+      wx.showToast({ title: '已删除', icon: 'success' })
+    } catch (e) {
+      wx.hideLoading()
+      wx.showToast({ title: '删除失败，请重试', icon: 'none' })
+    }
   },
 })

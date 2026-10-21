@@ -37,6 +37,16 @@
   font-size: 28rpx;
 }
 
+.context-hint {
+  display: inline-block;
+  font-size: 22rpx;
+  color: #F59E0B;
+  background: #FFF4EC;
+  border-radius: 20rpx;
+  padding: 8rpx 20rpx;
+  margin-bottom: 20rpx;
+}
+
 .answer-title {
   font-size: 30rpx;
   font-weight: 600;

@@ -83,21 +83,29 @@
 
 .gender-group {
   display: flex;
+  flex-wrap: wrap;
   margin-top: 16rpx;
 }
 
 .gender-tag {
-  padding: 12rpx 44rpx;
+  padding: 12rpx 36rpx;
   border-radius: 40rpx;
   background: #FFF4EC;
   color: #6B7280;
   font-size: 28rpx;
-  margin-right: 24rpx;
+  margin: 0 20rpx 20rpx 0;
 }
 
 .gender-tag-active {
   background: linear-gradient(135deg, #F59E0B, #FB923C);
   color: #FFFFFF;
+}
+
+.profile-tip {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+  color: #9CA3AF;
+  line-height: 1.6;
 }
 
 .save-btn {

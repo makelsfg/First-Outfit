@@ -54,8 +54,12 @@ exports.main = async (event) => {
   let adcode = DEFAULT_ADCODE
   let city = DEFAULT_CITY
 
-  // 有经纬度时先做逆地理编码，拿到城市与 adcode
-  if (event.longitude && event.latitude) {
+  // 用户手动选择的城市：直接用 adcode，跳过定位与逆地理编码
+  if (event.adcode) {
+    adcode = String(event.adcode)
+    city = ''
+  } else if (event.longitude && event.latitude) {
+    // 有经纬度时先做逆地理编码，拿到城市与 adcode
     try {
       const regeo = await httpGet(
         `https://restapi.amap.com/v3/geocode/regeo?key=${AMAP_KEY}&location=${event.longitude},${event.latitude}&extensions=base`
@@ -74,26 +78,53 @@ exports.main = async (event) => {
     }
   }
 
-  const weatherRes = await httpGet(
+  // 实况（当前温度 / 天气现象 / 风力）：只有 extensions=base 才返回 lives
+  const liveRes = await httpGet(
     `https://restapi.amap.com/v3/weather/weatherInfo?key=${AMAP_KEY}&city=${adcode}&extensions=base`
   )
-  const live = weatherRes.lives && weatherRes.lives[0]
+  console.log('[getWeather] base:', liveRes.status, liveRes.info, liveRes.infocode)
+  if (liveRes.status !== '1') {
+    throw new Error(`天气接口异常：${liveRes.info || ''}(${liveRes.infocode || ''})`)
+  }
+  const live = liveRes.lives && liveRes.lives[0]
   if (!live) {
     throw new Error('天气数据为空')
   }
 
   const temp = Number(live.temperature) || 0
   const windLevel = parseInt(String(live.windpower || '').replace(/[^0-9]/g, ''), 10) || 0
+
+  // 当天预报的最高 / 最低温（用于早晚温差建议）：extensions=all 单独查一次，失败不影响主流程
+  let tempMax = null
+  let tempMin = null
+  try {
+    const allRes = await httpGet(
+      `https://restapi.amap.com/v3/weather/weatherInfo?key=${AMAP_KEY}&city=${adcode}&extensions=all`
+    )
+    const forecast = allRes.forecasts && allRes.forecasts[0]
+    const today = forecast && forecast.casts && forecast.casts[0]
+    if (today) {
+      const dayMax = Number(today.daytemp)
+      const nightMin = Number(today.nighttemp)
+      if (!Number.isNaN(dayMax)) tempMax = dayMax
+      if (!Number.isNaN(nightMin)) tempMin = nightMin
+    }
+  } catch (e) {
+    console.log('[getWeather] 预报获取失败：', e.message)
+  }
+
   // 云函数运行在 UTC 时区，先转成北京时间再判断季节
   const month = new Date(Date.now() + 8 * 60 * 60 * 1000).getUTCMonth() + 1
 
   return {
-    city: live.city || city,
+    city: live.city || city || DEFAULT_CITY,
     temp,
     feelsLike: windLevel >= 5 ? temp - 3 : temp,
     text: live.weather || '多云',
     windLevel,
     icon: mapIcon(live.weather || ''),
     season: getSeason(month),
+    tempMax,
+    tempMin,
   }
 }

@@ -20,6 +20,11 @@
         <text class="info-label">性别</text>
         <text class="info-value">{{gender || '未填写'}}</text>
       </view>
+      <view class="info-item">
+        <text class="info-label">风格偏好</text>
+        <text class="info-value">{{styleLabel || '未填写'}}</text>
+      </view>
+      <view class="profile-tip">填写性别、年龄和风格，首页会为你推荐更贴合的衣服和试穿形象。</view>
     </block>
 
     <!-- 编辑模式 -->
@@ -53,6 +58,18 @@
             data-value="{{item}}"
             bindtap="onGenderTap"
           >{{item}}</view>
+        </view>
+      </view>
+      <view class="form-item form-item-gender">
+        <text class="form-label">风格偏好</text>
+        <view class="gender-group">
+          <view
+            class="gender-tag {{style === item.key ? 'gender-tag-active' : ''}}"
+            wx:for="{{styles}}"
+            wx:key="key"
+            data-value="{{item.key}}"
+            bindtap="onStyleTap"
+          >{{item.label}}</view>
         </view>
       </view>
     </block>

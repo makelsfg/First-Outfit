@@ -6,11 +6,15 @@
     <!-- 天气卡片 -->
     <view class="weather-card">
       <view class="weather-left">
-        <view class="city">{{weather.city}} · {{dateText}}</view>
+        <view class="city-row">
+          <view class="city-name" bindtap="onOpenCitySheet">{{weather.city}}<text class="city-caret">▾</text></view>
+          <text class="city-date">· {{dateText}}</text>
+        </view>
         <view class="temp-row">
           <text class="temp">{{weather.temp}}°</text>
           <text class="feels">体感 {{weather.feelsLike}}°</text>
         </view>
+        <view class="temp-range" wx:if="{{tempRangeText}}">{{tempRangeText}}</view>
       </view>
       <view class="weather-right">
         <text class="weather-icon">{{weather.icon}}</text>
@@ -20,7 +24,7 @@
 
     <!-- 穿搭方案 -->
     <view class="card">
-      <view class="section-title">今天这样穿</view>
+      <view class="section-title">今天这样穿<text class="style-tag" wx:if="{{outfit.styleLabel}}">{{outfit.styleLabel}}</text></view>
       <view class="outfit-item">
         <text class="outfit-label">上衣</text>
         <text class="outfit-value">{{outfit.top}}</text>
@@ -37,6 +41,37 @@
         <text class="outfit-label">鞋子</text>
         <text class="outfit-value">{{outfit.shoes}}</text>
       </view>
+    </view>
+
+    <!-- 模特试穿 -->
+    <view class="card tryon-card">
+      <view class="section-title">模特试穿</view>
+
+      <!-- 收起态：只显示触发按钮 -->
+      <block wx:if="{{!tryonExpanded}}">
+        <view class="tryon-trigger" bindtap="onToggleTryon">{{imageUrl ? '展开试穿形象' : '✨ 生成我的试穿形象'}}</view>
+        <view class="tryon-sub" wx:if="{{!imageUrl}}">按你的穿搭生成一张模特试穿图，约需十几秒</view>
+      </block>
+
+      <!-- 展开态 -->
+      <block wx:else>
+        <view class="tryon-stage" wx:if="{{tryonStatus === 'ready'}}">
+          <image class="tryon-image" src="{{imageUrl}}" mode="widthFix" />
+        </view>
+        <view class="tryon-placeholder" wx:elif="{{tryonStatus === 'loading'}}">
+          <view class="tryon-spinner"></view>
+          <text class="tryon-hint">正在为你生成试穿形象…（约需十几秒）</text>
+        </view>
+        <view class="tryon-placeholder" wx:else>
+          <text class="tryon-hint">试穿图暂时没生成出来</text>
+          <view class="tryon-retry" bindtap="onRetryTryon">点此重试</view>
+        </view>
+
+        <view class="tryon-actions">
+          <view class="tryon-action" bindtap="onToggleTryon">收起</view>
+          <view class="tryon-action tryon-action-primary" wx:if="{{tryonStatus === 'ready'}}" bindtap="onRegenerate">换一张</view>
+        </view>
+      </block>
     </view>
 
     <!-- 打卡按钮 -->
@@ -73,6 +108,51 @@
       <text class="encourage-title">今天也超棒的</text>
       <text class="encourage-content">{{encouragementText}}</text>
       <view class="encourage-btn" bindtap="onConfirmEncourage">确定</view>
+    </view>
+  </view>
+
+  <!-- 城市选择弹层 -->
+  <view class="sheet-mask" wx:if="{{citySheetVisible}}" bindtap="onCloseCitySheet">
+    <view class="city-sheet" catchtap="onStopTap">
+      <!-- 省份层 -->
+      <block wx:if="{{sheetLevel === 'province'}}">
+        <view class="city-sheet-title">选择城市</view>
+        <view class="city-item city-item-auto" bindtap="onUseAutoLocation">自动定位（当前位置）</view>
+        <scroll-view scroll-y class="city-list">
+          <view
+            class="city-item"
+            wx:for="{{provinces}}"
+            wx:key="name"
+            data-index="{{index}}"
+            bindtap="onPickProvince"
+          >{{item.name}}<text class="city-arrow">›</text></view>
+        </scroll-view>
+      </block>
+      <!-- 城市层 -->
+      <block wx:else>
+        <view class="city-sheet-title city-sheet-back" bindtap="onBackToProvinces">‹ {{activeProvince.name}}</view>
+        <scroll-view scroll-y class="city-list">
+          <view
+            class="city-item {{city && city.adcode === item.adcode ? 'city-item-active' : ''}}"
+            wx:for="{{activeProvince.cities}}"
+            wx:key="adcode"
+            data-adcode="{{item.adcode}}"
+            data-name="{{item.name}}"
+            bindtap="onSelectCity"
+          >{{item.name}}</view>
+        </scroll-view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 资料引导弹窗 -->
+  <view class="guide-mask" wx:if="{{showProfileGuide}}">
+    <view class="guide-card">
+      <text class="guide-emoji">✨</text>
+      <text class="guide-title">填写基本信息，穿搭更懂你</text>
+      <text class="guide-desc">填一下性别、年龄和风格偏好，首页会为你推荐更贴合的衣服，还能生成专属的模特试穿形象。</text>
+      <view class="guide-btn" bindtap="onGoProfile">去填写</view>
+      <view class="guide-skip" bindtap="onSkipGuide">跳过</view>
     </view>
   </view>
 </view>

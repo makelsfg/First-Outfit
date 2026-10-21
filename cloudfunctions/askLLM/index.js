@@ -16,7 +16,17 @@ const SYSTEM_PROMPT =
   '4) 语气温暖、鼓励。' +
   '5) 我会告诉你今天的真实日期、用户所在城市和当地实时天气，作为参考信息，不要反问用户所在城市或天气。' +
   '6) 区分问题类型：如果用户问的是泛指季节的（如「这个季节穿什么」「秋天怎么穿」），请先讲这个季节的穿衣特点和通用搭配思路，再结合今天的天气给一套具体方案；如果用户问的是具体某天（如「今天穿什么」），就直接结合当天天气回答。' +
+  '7) 我会告诉你用户的性别、年龄和风格偏好，请在符合其性别与年龄的前提下，优先按这个风格给建议；信息不全时给稳妥的兜底方案。' +
   '回答用中文，简洁易懂。'
+
+// 风格 key → 中文标签（与前端 utils/outfitRules 的 STYLE_OPTIONS 保持一致）
+const STYLE_LABELS = {
+  simple: '简约基础',
+  casual: '休闲运动',
+  sweet: '温柔甜美',
+  business: '商务通勤',
+  vintage: '文艺复古',
+}
 
 function httpPost(url, body, headers) {
   return new Promise((resolve, reject) => {
@@ -53,8 +63,8 @@ function httpPost(url, body, headers) {
   })
 }
 
-/** 生成带真实日期与天气的上下文（作为参考信息，不强制只答今天） */
-function buildContext(weather) {
+/** 生成带真实日期、天气与用户画像的上下文（作为参考信息，不强制只答今天） */
+function buildContext(weather, profile) {
   const now = new Date(Date.now() + 8 * 60 * 60 * 1000)
   const dateStr = `${now.getUTCFullYear()}年${now.getUTCMonth() + 1}月${now.getUTCDate()}日`
   let context = `今天是 ${dateStr}。`
@@ -63,6 +73,14 @@ function buildContext(weather) {
     context += `用户所在城市：${weather.city}；当地实时天气：${weather.text}；当前气温 ${weather.temp}℃，体感 ${weather.feelsLike}℃；季节：${weather.season}。`
   } else {
     context += '（未获取到用户位置与天气，请按当前日期判断季节作答）'
+  }
+
+  if (profile && (profile.gender || profile.age || profile.style)) {
+    const bits = []
+    if (profile.gender) bits.push(`性别${profile.gender}`)
+    if (profile.age) bits.push(`${profile.age}岁`)
+    if (profile.style) bits.push(`偏好${STYLE_LABELS[profile.style] || profile.style}风格`)
+    context += `用户画像：${bits.join('，')}。请结合这个画像给出更贴合他的建议。`
   }
 
   context += ' 以上信息供参考，请根据用户问题的类型选择回答重点。'
@@ -79,7 +97,7 @@ exports.main = async (event) => {
     throw new Error('问题不能为空')
   }
 
-  const context = buildContext(event.weather)
+  const context = buildContext(event.weather, event.profile)
 
   const res = await httpPost(
     'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',

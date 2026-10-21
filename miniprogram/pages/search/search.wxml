@@ -41,6 +41,7 @@
 
   <!-- 回答卡片 -->
   <view class="card answer-card" wx:if="{{!loading && hasSearched}}">
+    <view class="context-hint" wx:if="{{contextHint}}">🌤 {{contextHint}}</view>
     <view class="answer-title">为你解答</view>
     <text class="answer-text" user-select>{{answer}}</text>
   </view>

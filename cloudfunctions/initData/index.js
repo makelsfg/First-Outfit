@@ -17,7 +17,7 @@ const ENCOURAGEMENTS = [
   '不着急，好看的你会一点一点练出来的。',
 ]
 
-const COLLECTIONS = ['checkin_records', 'encouragement_library']
+const COLLECTIONS = ['checkin_records', 'encouragement_library', 'feedback', 'outfit_images']
 
 exports.main = async () => {
   const result = { collections: [], seeded: false }

@@ -1,0 +1,43 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2', fontFamily: 'PingFang SC, Microsoft YaHei, sans-serif', padding: '0' }}>
+    <Box style={{ position: 'absolute', left: 70, top: 30, width: 1140, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#2B2B33' }}>05 · S.C.A.F.F. 项目分析</Text>
+        <Box style={{ background: '#F97316', borderRadius: 16, padding: '6px 18px' }}>
+            <Text style={{ fontSize: 16, color: '#FFFFFF', fontWeight: 'bold' }}>核心分析框架</Text>
+        </Box>
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, top: 96, width: 1140, flexDirection: 'row', gap: 14 }}>
+        <Box style={{ flex: 1, height: 420, background: '#F97316', borderRadius: 18, padding: 18, justifyContent: 'flex-start', gap: 4 }}>
+            <Text style={{ fontSize: 60, fontWeight: 'bold', color: '#FFFFFF' }}>S</Text>
+            <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#FFFFFF' }}>Situation 场景</Text>
+            <Text style={{ fontSize: 15, color: '#FFFFFF', lineHeight: 1.5 }}>穿衣小白的日常决策难题：不知道天气穿什么、场合穿什么；现有 App 偏时尚向，对新手不友好。技术现状：小程序原生 + TS，微信云开发，无自建服务器。</Text>
+        </Box>
+        <Box style={{ flex: 1, height: 420, background: '#FB923C', borderRadius: 18, padding: 18, justifyContent: 'flex-start', gap: 4 }}>
+            <Text style={{ fontSize: 60, fontWeight: 'bold', color: '#FFFFFF' }}>C</Text>
+            <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#FFFFFF' }}>Challenge 挑战</Text>
+            <Text style={{ fontSize: 14, color: '#FFFFFF', lineHeight: 1.55 }}>· 定位被拒 / API 失败 → 四季兜底 + 手动选城市<br />· 拿不到流式响应 → 写库 + watch 曲线实现<br />· 衣柜打通 → 厚薄差 ≤1.2 + 打分 ≥1，否则劝退<br />· 性别边界 → 数据层 + 运行时双重过滤</Text>
+        </Box>
+        <Box style={{ flex: 1, height: 420, background: '#FFFFFF', borderRadius: 18, padding: 18, boxShadow: '0 4px 20px rgba(43,43,51,0.08)', justifyContent: 'flex-start', gap: 4 }}>
+            <Text style={{ fontSize: 60, fontWeight: 'bold', color: '#F9B384' }}>A</Text>
+            <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#2B2B33' }}>Audience 受众</Text>
+            <Text style={{ fontSize: 15, color: '#2B2B33', lineHeight: 1.5 }}>产品受众：不懂穿衣的大学生，需要零门槛、被鼓励的引导。汇报受众：同学与老师，讲清「问题 → 方案 → 取舍」逻辑链，多用图示截图、少堆术语。</Text>
+        </Box>
+        <Box style={{ flex: 1, height: 420, background: '#FFE3CC', borderRadius: 18, padding: 18, justifyContent: 'flex-start', gap: 4 }}>
+            <Text style={{ fontSize: 60, fontWeight: 'bold', color: '#F97316' }}>F</Text>
+            <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#2B2B33' }}>Format 形式</Text>
+            <Text style={{ fontSize: 15, color: '#2B2B33', lineHeight: 1.5 }}>规则引擎输出结构化方案：五类单品 + 一句话结论 + 逐条理由 + 天气提醒。本次汇报：架构图 + 截图 + 短句要点，每页只放一个核心信息。</Text>
+        </Box>
+        <Box style={{ flex: 1, height: 420, background: '#FB923C', borderRadius: 18, padding: 18, justifyContent: 'flex-start', gap: 4 }}>
+            <Text style={{ fontSize: 60, fontWeight: 'bold', color: '#FFFFFF' }}>F</Text>
+            <Text style={{ fontSize: 19, fontWeight: 'bold', color: '#FFFFFF' }}>Foundations 原则</Text>
+            <Text style={{ fontSize: 14, color: '#FFFFFF', lineHeight: 1.55 }}>· 不评判：永远鼓励，不质疑用户<br />· 给兜底：外部依赖失效有安全方案<br />· 解释为什么：方案附理由<br />· 极简：无登录无社交，打开即用</Text>
+        </Box>
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, top: 548, width: 1140, background: '#FB923C', borderRadius: 16, padding: '18px 28px', flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+        <Box style={{ width: 10, height: 36, background: '#FFFFFF', borderRadius: 5 }} />
+        <Text style={{ fontSize: 19, color: '#FFFFFF' }}>一句话总结：把「穿衣小白不知道穿什么」的真实场景，用<span style={{ color: '#F97316', fontWeight: 'bold' }}>可解释的规则 + 有兜底的 AI</span> 做成一个极简工具。</Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, bottom: 16, width: 1140, flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 13, color: '#9A9AA3' }}>First-Outfit · 小白穿衣推荐</Text>
+        <Text style={{ fontSize: 13, color: '#9A9AA3' }}>06 / 09</Text>
+    </Box>
+</Slide>

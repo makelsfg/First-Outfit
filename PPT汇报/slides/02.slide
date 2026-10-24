@@ -1,0 +1,41 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2', fontFamily: 'PingFang SC, Microsoft YaHei, sans-serif', padding: '0' }}>
+    <Box style={{ position: 'absolute', left: 70, top: 36, width: 1140, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#2B2B33' }}>01 · 为什么做：从一个真实痛点出发</Text>
+        <Box style={{ background: 'rgba(249,115,22,0.12)', borderRadius: 16, padding: '6px 18px' }}>
+            <Text style={{ fontSize: 16, color: '#F97316', fontWeight: 'bold' }}>痛点</Text>
+        </Box>
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, top: 108, width: 1140, background: '#FFFFFF', borderRadius: 18, padding: '22px 30px', boxShadow: '0 4px 20px rgba(43,43,51,0.08)', flexDirection: 'row', alignItems: 'center', gap: 20 }}>
+        <Text style={{ fontSize: 48, color: '#F97316', fontWeight: 'bold' }}>“</Text>
+        <Text style={{ fontSize: 23, color: '#2B2B33', lineHeight: 1.55 }}>
+            大一的我，衣柜里衣服不少，却总觉得<span style={{ color: '#F97316', fontWeight: 'bold' }}>没衣服穿</span>——不是不想学穿衣，是<span style={{ fontWeight: 'bold' }}>没人教，也不好意思问</span>。慢慢试、慢慢看才明白：穿衣不需要天赋，只需要有人告诉你几条最基础的规则。
+        </Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, top: 232, width: 1140, flexDirection: 'row', gap: 24 }}>
+        {[
+            { n: '01', t: '穿多了热', d: '天气一变就抓瞎，早晚温差大，只会靠乱加衣服救场。' },
+            { n: '02', t: '穿少了冷', d: '全靠感觉硬扛，冷到了才后悔没多带一件外套。' },
+            { n: '03', t: '面试怕随意', d: '不知道什么场合该穿什么，正式场合怕显得太随意。' },
+            { n: '04', t: '上课怕奇怪', d: '穿得太隆重或太随便都会不自在，干脆哪件都别扭。' },
+        ].map((c) => (
+            <Box key={c.n} style={{ flex: 1, background: '#FFFFFF', borderRadius: 20, padding: 24, height: 250, boxShadow: '0 4px 20px rgba(43,43,51,0.08)', justifyContent: 'space-between' }}>
+                <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+                    <Text style={{ fontSize: 40, fontWeight: 'bold', color: '#F97316' }}>{c.n}</Text>
+                    <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#2B2B33' }}>{c.t}</Text>
+                </Box>
+                <Text style={{ fontSize: 19, color: '#6B6B75', lineHeight: 1.6 }}>{c.d}</Text>
+                <Box style={{ height: 4, background: 'rgba(249,115,22,0.25)', borderRadius: 2 }} />
+            </Box>
+        ))}
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, top: 530, width: 1140, background: '#2B2B33', borderRadius: 18, padding: '24px 30px', flexDirection: 'row', alignItems: 'center', gap: 18 }}>
+        <Box style={{ width: 10, height: 44, background: '#F97316', borderRadius: 5 }} />
+        <Text style={{ fontSize: 22, color: '#FFFFFF', lineHeight: 1.5 }}>
+            所以我想做一个工具：它不教你变时尚，只做一件事——<span style={{ color: '#F97316', fontWeight: 'bold' }}>告诉你今天穿什么，不会出错</span>。目标用户就是和我一样的「穿衣小白」。
+        </Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, bottom: 16, width: 1140, flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 13, color: '#9A9AA3' }}>First-Outfit · 小白穿衣推荐</Text>
+        <Text style={{ fontSize: 13, color: '#9A9AA3' }}>02 / 09</Text>
+    </Box>
+</Slide>

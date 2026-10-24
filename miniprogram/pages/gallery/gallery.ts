@@ -3,6 +3,8 @@ import { listCheckins, removeCheckins } from '../../utils/checkin'
 import type { CheckinRecord } from '../../utils/checkin'
 import type { WeatherInfo, OutfitResult } from '../../utils/outfitRules'
 import { CLOUD_ENV } from '../../utils/config'
+import { getProfile } from '../../utils/storage'
+import { applyTheme } from '../../utils/preferences'
 
 interface GalleryItem {
   _id?: string
@@ -23,9 +25,13 @@ Page({
     empty: true,
     managing: false,
     selected: [] as string[],
+    theme: 'orange',
   },
 
   async onShow() {
+    const p = getProfile()
+    this.setData({ theme: p.theme })
+    applyTheme(p.theme)
     await this.refresh()
   },
 

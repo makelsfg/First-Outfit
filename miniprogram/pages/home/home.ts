@@ -1,8 +1,14 @@
-// 首页：个性化穿衣推荐（天气 + 性别/年龄/风格） + AI 模特试穿图（点击生成） + 每日穿搭打卡
+// 首页：今日推荐（温度 × 场合 × 性别 × 偏好） + 时段切换 + 衣柜入口与轻打通 + 城市选择
 import { getWeather, getFallbackWeather, requestLocation } from '../../utils/weather'
 import type { Coords } from '../../utils/weather'
-import { recommendOutfit } from '../../utils/outfitRules'
-import type { WeatherInfo, OutfitResult } from '../../utils/outfitRules'
+import {
+  recommendOutfits,
+  targetWarmth,
+  SCENE_OPTIONS,
+  allowsFeminine,
+  isFeminineItem,
+} from '../../utils/outfitRules'
+import type { WeatherInfo, OutfitResult, RecommendPrefs } from '../../utils/outfitRules'
 import {
   getProfile,
   getCity,
@@ -11,45 +17,121 @@ import {
   isProfileEmpty,
   isProfileGuideDismissed,
   dismissProfileGuide,
-  requestProfileEdit,
 } from '../../utils/storage'
 import type { Profile } from '../../utils/storage'
+import { avatarOf, applyTheme } from '../../utils/preferences'
 import { PROVINCES } from '../../utils/cities'
 import type { City, Province } from '../../utils/cities'
-import { getOutfitImage } from '../../utils/outfitImage'
-import { hasCheckedToday, addCheckin, formatDate } from '../../utils/checkin'
-import { getRandomEncouragement } from '../../utils/encouragement'
-import { CLOUD_ENV } from '../../utils/config'
+import { listWardrobe, pickWardrobe, seasonKeyOf } from '../../utils/wardrobe'
+import type { WardrobeItem } from '../../utils/wardrobe'
+import { safeNavigateTo, safeSwitchTab } from '../../utils/nav'
 
-type Phase = 'idle' | 'toast' | 'encourage'
-type TryonStatus = 'idle' | 'loading' | 'ready' | 'failed'
 type SheetLevel = 'province' | 'city'
+type SlotKey = 'now' | 'today' | 'tomorrow'
 
-const EMPTY_PROFILE: Profile = { nickname: '', age: '', gender: '', style: '' }
+interface SlotOption {
+  key: SlotKey
+  label: string
+}
+
+const SLOT_OPTIONS: SlotOption[] = [
+  { key: 'now', label: '现在' },
+  { key: 'today', label: '今天' },
+  { key: 'tomorrow', label: '明早' },
+]
+
+const EMPTY_PROFILE: Profile = {
+  nickname: '',
+  gender: '',
+  ageBand: '',
+  scene: 'daily',
+  cold: 'normal',
+  travel: 'walk',
+  rain: 'auto',
+  theme: 'orange',
+}
+
+const AUTO_REFRESH_MS = 10 * 60 * 1000
+let refreshTimer: ReturnType<typeof setInterval> | null = null
+
+function pad2(n: number): string {
+  return n < 10 ? '0' + n : '' + n
+}
+
+function medianRange(max?: number | null, min?: number | null): number | null {
+  if (max == null || min == null) {
+    return null
+  }
+  return Math.round((max + min) / 2)
+}
+
+/** 轻打通：衣柜里「厚薄合适 + 场合匹配」的就直接替换（并标注来源）；不合适则给一句劝退提示 */
+function withWardrobe(
+  outfit: OutfitResult,
+  wardrobe: WardrobeItem[],
+  sceneKey: string,
+  seasonKey: string,
+  target: number,
+  gender: string
+): OutfitResult {
+  // 性别硬边界：非「女」用户，衣柜里的裙装/打底袜等不会被替换进方案
+  const usable = allowsFeminine(gender)
+    ? wardrobe
+    : wardrobe.filter((item) => !isFeminineItem(item.name || ''))
+  if (usable.length === 0) {
+    return outfit
+  }
+  const notes: string[] = []
+  const pick = (category: string, fallback: string): string => {
+    const r = pickWardrobe(usable, category, sceneKey, seasonKey, target)
+    if (r.name) {
+      return `${r.name}（你衣柜里的）`
+    }
+    if (r.rejectedName) {
+      notes.push(`你衣柜里的「${r.rejectedName}」今天厚薄不太合适，先别穿它。`)
+    }
+    return fallback
+  }
+  // 雨雪天的鞋是安全建议，不替换
+  const shoesAdapted = /防水|防滑/.test(outfit.shoes)
+  const next: OutfitResult = {
+    ...outfit,
+    top: pick('top', outfit.top),
+    coat: outfit.coat ? pick('coat', outfit.coat) : '',
+    bottom: pick('bottom', outfit.bottom),
+    shoes: shoesAdapted ? outfit.shoes : pick('shoes', outfit.shoes),
+  }
+  if (notes.length > 0) {
+    next.reasonPoints = next.reasonPoints.concat(notes.slice(0, 1))
+  }
+  return next
+}
 
 Page({
   data: {
-    weather: null as WeatherInfo | null,
-    outfit: null as OutfitResult | null,
     loading: true,
+    weather: null as WeatherInfo | null,
+    outfits: [] as OutfitResult[],
+    outfitIndex: 0,
+    outfit: null as OutfitResult | null,
+    wardrobe: [] as WardrobeItem[],
+    warmthTarget: 3,
     dateText: '',
-    tempRangeText: '',
-    checkedToday: false,
-    phase: 'idle' as Phase,
-    toastFading: false,
-    encouragementText: '',
+    metaText: '',
+    updatedAt: '',
+    avatar: '/images/avatar-bear.png',
+    theme: 'orange',
+    slots: SLOT_OPTIONS,
+    slot: 'now' as SlotKey,
+    scenes: SCENE_OPTIONS,
+    scene: 'daily',
     profile: EMPTY_PROFILE,
-    // 城市
     city: null as City | null,
+    lastCoords: null as Coords | null,
     provinces: PROVINCES,
     citySheetVisible: false,
     sheetLevel: 'province' as SheetLevel,
     activeProvince: null as Province | null,
-    // 模特试穿：默认收起，点击按钮才生成
-    tryonExpanded: false,
-    tryonStatus: 'idle' as TryonStatus,
-    imageUrl: '',
-    // 未填资料时的引导弹窗
     showProfileGuide: false,
   },
 
@@ -59,74 +141,75 @@ Page({
 
   async init() {
     const profile = getProfile()
-    this.setData({ profile })
+    this.setData({
+      profile,
+      avatar: avatarOf(profile.gender),
+      theme: profile.theme,
+      scene: profile.scene,
+    })
+    applyTheme(profile.theme)
 
-    // 已经手动选过城市：直接用，不再定位
     const saved = getCity()
     if (saved) {
       await this.loadWeather(saved, null)
       this.maybeShowProfileGuide(profile)
+      this.refreshWardrobe()
       return
     }
 
-    // 首次进入：自动定位一次
     const coords = await requestLocation()
     await this.loadWeather(null, coords)
     if (!coords) {
-      // 定位失败（多半是没给权限）：先弹定位引导，避免与资料引导同时弹
       this.promptNoLocation()
     } else {
       this.maybeShowProfileGuide(profile)
     }
+    this.refreshWardrobe()
   },
 
-  /** 未填基本信息且没弹过 → 引导填写（带跳过） */
-  maybeShowProfileGuide(profile: Profile) {
-    if (isProfileEmpty(profile) && !isProfileGuideDismissed()) {
-      this.setData({ showProfileGuide: true })
-    }
-  },
-
-  onGoProfile() {
-    dismissProfileGuide()
-    requestProfileEdit()
-    this.setData({ showProfileGuide: false })
-    // 「我的」是 tabBar 页，必须用 switchTab
-    wx.switchTab({ url: '/pages/profile/profile' })
-  },
-
-  onSkipGuide() {
-    dismissProfileGuide()
-    this.setData({ showProfileGuide: false })
-  },
-
-  async onShow() {
-    // 每次页面显示都重新检查打卡状态（删除今日记录后能恢复可打卡）
-    this.checkCheckin()
-    // 画像变化时（例如刚在「我的」改了性别/风格）只需重算穿搭，无需重新取天气
+  onShow() {
     const profile = getProfile()
     if (JSON.stringify(profile) !== JSON.stringify(this.data.profile)) {
-      this.setData({ profile })
-      const weather = this.data.weather
-      if (weather) {
-        this.computeOutfit(profile, weather)
-      }
+      const sceneChanged = profile.scene !== this.data.profile.scene
+      this.setData({
+        profile,
+        avatar: avatarOf(profile.gender),
+        theme: profile.theme,
+        scene: sceneChanged ? profile.scene : this.data.scene,
+      })
+      applyTheme(profile.theme)
+      this.recompute()
+    } else {
+      applyTheme(this.data.theme)
+    }
+    this.refreshWardrobe()
+    this.startAutoRefresh()
+  },
+
+  onHide() {
+    this.stopAutoRefresh()
+  },
+
+  onUnload() {
+    this.stopAutoRefresh()
+  },
+
+  startAutoRefresh() {
+    this.stopAutoRefresh()
+    refreshTimer = setInterval(() => {
+      this.onRefresh()
+    }, AUTO_REFRESH_MS)
+  },
+
+  stopAutoRefresh() {
+    if (refreshTimer != null) {
+      clearInterval(refreshTimer)
+      refreshTimer = null
     }
   },
 
-  async checkCheckin() {
-    const today = formatDate(new Date())
-    try {
-      const checked = await hasCheckedToday(today)
-      this.setData({ checkedToday: checked })
-    } catch {
-      this.setData({ checkedToday: false })
-    }
-  },
-
-  /** 取天气 → 算穿搭。city 优先，其次 coords，都没有则用默认城市 */
   async loadWeather(city: City | null, coords: Coords | null) {
-    this.setData({ city, loading: true })
+    this.setData({ city, lastCoords: coords, loading: true })
     let weather: WeatherInfo
     try {
       weather = await getWeather({ city, coords })
@@ -138,24 +221,144 @@ Page({
     this.computeOutfit(this.data.profile, weather)
   },
 
+  onRefresh() {
+    this.loadWeather(this.data.city, this.data.lastCoords)
+  },
+
+  recompute() {
+    const weather = this.data.weather
+    if (weather) {
+      this.computeOutfit(this.data.profile, weather)
+    }
+  },
+
   computeOutfit(profile: Profile, weather: WeatherInfo) {
-    const outfit = recommendOutfit(weather, profile)
+    let tempOverride: number | undefined
+    let slotLabel = ''
+    if (this.data.slot === 'today') {
+      const m = medianRange(weather.tempMax, weather.tempMin)
+      if (m != null) {
+        tempOverride = m
+        slotLabel = '今天'
+      }
+    } else if (this.data.slot === 'tomorrow') {
+      const m = medianRange(weather.tomorrowMax, weather.tomorrowMin)
+      if (m != null) {
+        tempOverride = m
+        slotLabel = '明早'
+      }
+    }
+
+    const prefs: RecommendPrefs = {
+      gender: profile.gender,
+      ageBand: profile.ageBand,
+      scene: this.data.scene,
+      tempOverride,
+      slotLabel,
+      cold: profile.cold,
+      travel: profile.travel,
+      rain: profile.rain,
+    }
+    const outfits = recommendOutfits(weather, prefs)
+    const warmthTarget = targetWarmth(weather, prefs)
+
     const now = new Date()
     const dateText = `${now.getMonth() + 1}月${now.getDate()}日 · ${weather.season}`
-    const tempRangeText =
-      weather.tempMax != null && weather.tempMin != null
-        ? `最高 ${weather.tempMax}° / 最低 ${weather.tempMin}°`
-        : ''
-    // 推荐变化时重置试穿（旧的试穿图对应的是旧穿搭，不再复用）
+    const updatedAt = `${pad2(now.getHours())}:${pad2(now.getMinutes())} 更新`
+    const parts = [`体感 ${weather.feelsLike}°`, `风力${weather.windLevel}级`]
+    if (weather.tempMax != null && weather.tempMin != null) {
+      parts.push(`全天 ${weather.tempMin}-${weather.tempMax}°`)
+    }
+
     this.setData({
-      outfit,
+      outfits,
+      outfitIndex: 0,
       dateText,
-      tempRangeText,
+      metaText: parts.join(' · '),
+      updatedAt,
+      warmthTarget,
       loading: false,
-      tryonExpanded: false,
-      tryonStatus: 'idle',
-      imageUrl: '',
     })
+    this.applyCurrent()
+  },
+
+  /** 把「当前这套」加上衣柜提示后展示 */
+  applyCurrent() {
+    const o = this.data.outfits[this.data.outfitIndex]
+    if (!o) {
+      return
+    }
+    const weather = this.data.weather
+    const seasonKey = weather ? seasonKeyOf(weather.season) : ''
+    this.setData({
+      outfit: withWardrobe(
+        o,
+        this.data.wardrobe,
+        this.data.scene,
+        seasonKey,
+        this.data.warmthTarget,
+        this.data.profile.gender
+      ),
+    })
+  },
+
+  onNextOutfit() {
+    const outfits = this.data.outfits
+    if (outfits.length <= 1) {
+      return
+    }
+    const index = (this.data.outfitIndex + 1) % outfits.length
+    this.setData({ outfitIndex: index })
+    this.applyCurrent()
+  },
+
+  onSelectSlot(e: WechatMiniprogram.TouchEvent) {
+    const key = e.currentTarget.dataset.key as SlotKey
+    if (key === this.data.slot) {
+      return
+    }
+    this.setData({ slot: key })
+    this.recompute()
+  },
+
+  onSelectScene(e: WechatMiniprogram.TouchEvent) {
+    const key = String(e.currentTarget.dataset.key)
+    if (key === this.data.scene) {
+      return
+    }
+    this.setData({ scene: key })
+    this.recompute()
+  },
+
+  // ---------------- 衣柜 ----------------
+
+  async refreshWardrobe() {
+    try {
+      const wardrobe = await listWardrobe()
+      this.setData({ wardrobe })
+    } catch (e) {
+      console.error('[wardrobe] 读取失败：', e)
+      this.setData({ wardrobe: [] })
+    }
+    this.applyCurrent()
+  },
+
+  onOpenWardrobe() {
+    safeSwitchTab('/pages/wardrobe/wardrobe')
+  },
+
+  onOpenSettings() {
+    safeSwitchTab('/pages/settings/settings')
+  },
+
+  onAddClothing() {
+    safeNavigateTo('/pages/wardrobe/edit')
+  },
+
+  // ---------------- 入口 ----------------
+
+  onOpenChat() {
+    safeNavigateTo('/pages/chat/chat')
   },
 
   promptNoLocation() {
@@ -172,7 +375,26 @@ Page({
     })
   },
 
-  // ---------------- 城市选择（省份 → 城市） ----------------
+  // ---------------- 资料引导 ----------------
+
+  maybeShowProfileGuide(profile: Profile) {
+    if (isProfileEmpty(profile) && !isProfileGuideDismissed()) {
+      this.setData({ showProfileGuide: true })
+    }
+  },
+
+  onGoProfile() {
+    dismissProfileGuide()
+    this.setData({ showProfileGuide: false })
+    safeSwitchTab('/pages/settings/settings')
+  },
+
+  onSkipGuide() {
+    dismissProfileGuide()
+    this.setData({ showProfileGuide: false })
+  },
+
+  // ---------------- 城市选择 ----------------
 
   onOpenCitySheet() {
     this.setData({ citySheetVisible: true, sheetLevel: 'province', activeProvince: null })
@@ -182,7 +404,6 @@ Page({
     this.setData({ citySheetVisible: false })
   },
 
-  // 阻止点透到遮罩，避免点卡片内容时误关闭
   onStopTap() {},
 
   onPickProvince(e: WechatMiniprogram.TouchEvent) {
@@ -204,11 +425,9 @@ Page({
     const city: City = { name, adcode }
     saveCity(city)
     this.setData({ citySheetVisible: false })
-    // 选完立即重新查天气
     this.loadWeather(city, null)
   },
 
-  /** 切回自动定位 */
   async onUseAutoLocation() {
     clearCity()
     this.setData({ citySheetVisible: false })
@@ -217,119 +436,5 @@ Page({
     if (!coords) {
       this.promptNoLocation()
     }
-  },
-
-  // ---------------- 模特试穿 ----------------
-
-  /** 点按钮：收起 ↔ 展开；首次展开时触发生成 */
-  onToggleTryon() {
-    if (this.data.tryonExpanded) {
-      this.setData({ tryonExpanded: false })
-      return
-    }
-    if (this.data.imageUrl || this.data.tryonStatus === 'loading') {
-      // 已生成过、或正在生成中，直接展开，不重复生成
-      this.setData({ tryonExpanded: true })
-      return
-    }
-    this.setData({ tryonExpanded: true })
-    this.generateTryon(false)
-  },
-
-  /** 换一张：跳过缓存重新生成 */
-  onRegenerate() {
-    this.generateTryon(true)
-  },
-
-  /** 生成失败后重试 */
-  onRetryTryon() {
-    this.generateTryon(false)
-  },
-
-  async generateTryon(force: boolean) {
-    const { profile, weather, outfit } = this.data
-    if (!weather || !outfit) {
-      wx.showToast({ title: '数据未就绪，请稍后重试', icon: 'none' })
-      return
-    }
-    this.setData({ tryonStatus: 'loading', imageUrl: '' })
-    try {
-      const { url } = await getOutfitImage(profile, weather, outfit, force)
-      this.setData({ tryonStatus: 'ready', imageUrl: url })
-    } catch (e) {
-      console.error('[outfitImage] 生成失败：', e)
-      this.setData({ tryonStatus: 'failed' })
-    }
-  },
-
-  // ---------------- 打卡 ----------------
-
-  onCheckin() {
-    if (this.data.checkedToday) {
-      return
-    }
-    wx.chooseMedia({
-      count: 1,
-      mediaType: ['image'],
-      sourceType: ['album', 'camera'],
-      success: (res) => {
-        const tempFilePath = res.tempFiles[0].tempFilePath
-        this.saveImageAndCheckin(tempFilePath)
-      },
-    })
-  },
-
-  async saveImageAndCheckin(tempFilePath: string) {
-    const weather = this.data.weather
-    const outfit = this.data.outfit
-    if (!weather || !outfit) {
-      wx.showToast({ title: '数据未就绪，请稍后重试', icon: 'none' })
-      return
-    }
-    const today = formatDate(new Date())
-    wx.showLoading({ title: '上传中…', mask: true })
-    try {
-      // 1. 上传照片到云存储
-      const uploadRes = await wx.cloud.uploadFile({
-        cloudPath: `checkin/${today}_${Date.now()}.jpg`,
-        filePath: tempFilePath,
-        config: { env: CLOUD_ENV },
-      })
-      // 2. 写入打卡记录到云数据库
-      await addCheckin({
-        date: today,
-        imageFileID: uploadRes.fileID,
-        weather,
-        outfit,
-        createTime: Date.now(),
-      })
-      // 3. 预取鼓励语
-      const encouragement = await getRandomEncouragement()
-      wx.hideLoading()
-      this.setData({
-        checkedToday: true,
-        phase: 'toast',
-        toastFading: false,
-      })
-      // 弹窗1 展示 1.5 秒后开始淡出（transition 0.4s）
-      setTimeout(() => {
-        this.setData({ toastFading: true })
-      }, 1500)
-      // 淡出结束后进入弹窗2
-      setTimeout(() => {
-        this.setData({
-          phase: 'encourage',
-          encouragementText: encouragement,
-        })
-      }, 1900)
-    } catch (e) {
-      console.error('[checkin] 打卡失败：', e)
-      wx.hideLoading()
-      wx.showToast({ title: '打卡失败，请重试', icon: 'none' })
-    }
-  },
-
-  onConfirmEncourage() {
-    this.setData({ phase: 'idle' })
   },
 })

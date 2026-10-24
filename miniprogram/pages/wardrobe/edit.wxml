@@ -1,0 +1,107 @@
+<view class="app theme-{{theme}}">
+  <view class="page-container">
+    <!-- 照片 -->
+    <view class="photo-box" bindtap="onChoosePhoto">
+      <image class="photo-img" wx:if="{{photoPreview}}" src="{{photoPreview}}" mode="aspectFill" />
+      <view class="photo-holder" wx:else>
+        <text class="photo-plus">📷</text>
+        <text class="photo-hint">点击拍摄 / 选择衣服照片</text>
+      </view>
+    </view>
+
+    <!-- 名称 -->
+    <view class="card">
+      <view class="field-label">名称</view>
+      <input
+        class="input"
+        value="{{name}}"
+        placeholder="如「白色卫衣」"
+        bindinput="onNameInput"
+      />
+    </view>
+
+    <!-- 分类（单选） -->
+    <view class="card">
+      <view class="field-label">分类</view>
+      <view class="chips">
+        <view
+          class="chip {{category === item.key ? 'chip-active' : ''}}"
+          wx:for="{{categories}}"
+          wx:key="key"
+          data-value="{{item.key}}"
+          bindtap="onPickCategory"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <!-- 季节（多选） -->
+    <view class="card">
+      <view class="field-label">季节</view>
+      <view class="chips">
+        <view
+          class="chip {{item.active ? 'chip-active' : ''}}"
+          wx:for="{{seasonOptions}}"
+          wx:key="key"
+          data-value="{{item.key}}"
+          bindtap="onToggleSeason"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <!-- 颜色（多选） -->
+    <view class="card">
+      <view class="field-label">颜色</view>
+      <view class="chips">
+        <view
+          class="chip {{item.active ? 'chip-active' : ''}}"
+          wx:for="{{colorOptions}}"
+          wx:key="key"
+          data-value="{{item.key}}"
+          bindtap="onToggleColor"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <!-- 材质（多选） -->
+    <view class="card">
+      <view class="field-label">材质</view>
+      <view class="chips">
+        <view
+          class="chip {{item.active ? 'chip-active' : ''}}"
+          wx:for="{{materialOptions}}"
+          wx:key="key"
+          data-value="{{item.key}}"
+          bindtap="onToggleMaterial"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <!-- 标签（多选，参与推荐匹配） -->
+    <view class="card">
+      <view class="field-label">标签<text class="field-tip">（选好场合，推荐时更容易用上它）</text></view>
+      <view class="chips">
+        <view
+          class="chip {{item.active ? 'chip-active' : ''}}"
+          wx:for="{{tagOptions}}"
+          wx:key="key"
+          data-value="{{item.key}}"
+          bindtap="onToggleTag"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <!-- 备注 -->
+    <view class="card">
+      <view class="field-label">备注</view>
+      <textarea
+        class="textarea"
+        value="{{note}}"
+        placeholder="可以记录购买来源、搭配心得等"
+        maxlength="200"
+        bindinput="onNoteInput"
+      />
+    </view>
+
+    <button class="btn-primary save-btn" bindtap="onSave">保存</button>
+  </view>
+</view>

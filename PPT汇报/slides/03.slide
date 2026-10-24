@@ -1,0 +1,33 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2', fontFamily: 'PingFang SC, Microsoft YaHei, sans-serif', padding: '0' }}>
+    <Box style={{ position: 'absolute', left: 70, top: 36, width: 1140, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#2B2B33' }}>02 · 做了什么：三大核心功能</Text>
+        <Box style={{ background: 'rgba(249,115,22,0.12)', borderRadius: 16, padding: '6px 18px' }}>
+            <Text style={{ fontSize: 16, color: '#F97316', fontWeight: 'bold' }}>功能总览</Text>
+        </Box>
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, top: 118, width: 1140, flexDirection: 'row', gap: 30 }}>
+        {[
+            { img: 'assets/shot_home_c.png', t: '今日推荐（首页）', d: '定位取真实天气，按「现在 / 今天 / 明早」× 5 个场合，给出 3 套可循环方案，每套附「为什么这样穿」的理由和天气提醒。' },
+            { img: 'assets/shot_wardrobe_c.png', t: '我的衣橱', d: '拍照录入衣物（分类 / 季节 / 颜色 / 标签），支持模糊搜索与筛选；推荐时优先用你衣柜里厚薄合适的单品——「衣柜轻打通」。' },
+            { img: 'assets/shot_settings_c.png', t: '设置 + 客服问答', d: '性别 / 年龄段 / 怕冷程度 / 出行方式等偏好，全局换肤；右下角悬浮进入 AI 客服，只答穿搭话题，逐字流式输出。' },
+        ].map((c, i) => (
+            <Box key={i} style={{ flex: 1, background: '#FFFFFF', borderRadius: 20, padding: 18, boxShadow: '0 4px 20px rgba(43,43,51,0.08)', gap: 12 }}>
+                <Box style={{ width: '100%', height: 300, borderRadius: 14, overflow: 'hidden', background: '#FFFFFF', justifyContent: 'center', alignItems: 'center' }}>
+                    <Image src={c.img} style={{ width: '100%', height: 300, objectFit: 'cover', borderRadius: 14 }} />
+                </Box>
+                <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#2B2B33' }}>{c.t}</Text>
+                <Text style={{ fontSize: 17, color: '#6B6B75', lineHeight: 1.55 }}>{c.d}</Text>
+            </Box>
+        ))}
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, top: 592, width: 1140, background: '#2B2B33', borderRadius: 16, padding: '16px 28px', flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+        <Box style={{ width: 10, height: 34, background: '#F97316', borderRadius: 5 }} />
+        <Text style={{ fontSize: 19, color: '#FFFFFF' }}>
+            无登录、无社交、打开即用：<span style={{ color: '#F97316', fontWeight: 'bold' }}>推荐由确定性规则决定</span>，AI 只做问答兜底。
+        </Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, bottom: 16, width: 1140, flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 13, color: '#9A9AA3' }}>First-Outfit · 小白穿衣推荐</Text>
+        <Text style={{ fontSize: 13, color: '#9A9AA3' }}>03 / 09</Text>
+    </Box>
+</Slide>

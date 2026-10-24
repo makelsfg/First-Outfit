@@ -1,0 +1,55 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2', fontFamily: 'PingFang SC, Microsoft YaHei, sans-serif', padding: '0' }}>
+    <Box style={{ position: 'absolute', left: 70, top: 30, width: 1140, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#2B2B33' }}>04 · 亮点二：小程序里的「真流式」AI 问答</Text>
+        <Box style={{ background: '#FFDFC2', borderRadius: 16, padding: '6px 18px' }}>
+            <Text style={{ fontSize: 16, color: '#F97316', fontWeight: 'bold' }}>技术亮点 2</Text>
+        </Box>
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, top: 104, width: 1140, background: '#FFFFFF', borderRadius: 20, padding: '20px 24px', boxShadow: '0 4px 20px rgba(43,43,51,0.08)' }}>
+        <Text style={{ fontSize: 18, color: '#2B2B33', marginBottom: 10 }}>
+            难题：<span style={{ fontWeight: 'bold' }}>wx.cloud.callFunction 拿不到流式响应</span>，接口只能一次性返回 → 用「云函数写库 + 客户端监听」曲线实现
+        </Text>
+        <svg width={1092} height={170} viewBox='0 0 1092 170'>
+            {[
+                { x: 0, t1: '用户提问', t2: '首页悬浮 💬', fill: '#FFE3CC', c: '#2B2B33' },
+                { x: 216, t1: '云函数 askLLM', t2: '代理百炼 stream', fill: '#F97316', c: '#FFFFFF' },
+                { x: 432, t1: '解析 SSE', t2: '节流写回数据库', fill: '#F97316', c: '#FFFFFF' },
+                { x: 648, t1: 'llm_stream 文档', t2: '累积文本更新', fill: '#FB923C', c: '#FFFFFF' },
+                { x: 876, t1: 'db.watch() 监听', t2: '逐字渲染 + 光标', fill: '#FB923C', c: '#FFFFFF' },
+            ].map((b) => (
+                <g key={b.x}>
+                    <rect x={b.x + 4} y='20' width='200' height='110' rx='14' fill={b.fill} />
+                    <text x={b.x + 104} y='66' textAnchor='middle' fontSize='20' fontWeight='bold' fill={b.c}>{b.t1}</text>
+                    <text x={b.x + 104} y='98' textAnchor='middle' fontSize='15' fill={b.c}>{b.t2}</text>
+                </g>
+            ))}
+            {[206, 422, 638, 866].map((x) => (
+                <line key={x} x1={x} y1='75' x2={x + 14} y2='75' stroke='#F97316' strokeWidth='4' />
+            ))}
+            <text x='546' y='160' textAnchor='middle' fontSize='15' fill='#6B6B75'>效果：提问后先出「正在思考…」，模型一返回就逐字冒出，长回答自动追底</text>
+        </svg>
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, top: 380, width: 1140 }}>
+        <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#2B2B33' }}>降级设计：任何环节失败都能出字，不会「炸」</Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, top: 420, width: 1140, flexDirection: 'row', gap: 24 }}>
+        {[
+            { t: 'watch 失败 / 集合缺失', d: '自动退回「整段返回 + 打字机逐字显示」，任何环境都能出字' },
+            { t: '整体 45 秒超时', d: '中断时保留已生成的部分回答，不白等、不丢内容' },
+            { t: '对话本地保留 120 条', d: '退出再进来还在；每轮可收起，长对话不刷屏' },
+        ].map((c, i) => (
+            <Box key={i} style={{ flex: 1, background: '#FFFFFF', borderRadius: 18, padding: 22, boxShadow: '0 4px 20px rgba(43,43,51,0.08)', height: 196, justifyContent: 'space-between' }}>
+                <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#F97316' }}>{c.t}</Text>
+                <Text style={{ fontSize: 18, color: '#2B2B33', lineHeight: 1.55 }}>{c.d}</Text>
+            </Box>
+        ))}
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, top: 636, width: 1140, background: '#FB923C', borderRadius: 16, padding: '14px 28px', flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+        <Box style={{ width: 10, height: 30, background: '#F97316', borderRadius: 5 }} />
+        <Text style={{ fontSize: 18, color: '#FFFFFF' }}>系统提示词限定话题边界：只回答穿衣搭配，其余话题礼貌拒绝并引回穿搭</Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, bottom: 16, width: 1140, flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 13, color: '#9A9AA3' }}>First-Outfit · 小白穿衣推荐</Text>
+        <Text style={{ fontSize: 13, color: '#9A9AA3' }}>05 / 09</Text>
+    </Box>
+</Slide>

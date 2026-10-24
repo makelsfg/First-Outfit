@@ -1,24 +1,86 @@
-/** 全局样式 · 温暖极简 / 治愈系 */
+/** 全局样式 · 主题变量 + 基础布局 */
+/* 默认主题（暖橙）定义在 page 上，任何页面都能取到；
+   页面根节点挂 theme-blue / theme-pink / theme-orange 类即可整体换肤。 */
+
 page {
+  --brand: #F59E0B;
+  --brand-2: #FB923C;
+  --brand-soft: #FFF4EC;
+  --bg: #FFF9F5;
+  --card: #FFFFFF;
+  --card-2: #FFF7F0;
+  --text: #1F2937;
+  --text-2: #6B7280;
+  --text-3: #9CA3AF;
+  --btn-dark: #1F2937;
+  --shadow: rgba(245, 158, 11, 0.14);
   background: #FFF9F5;
-  color: #1F2937;
+}
+
+.theme-blue {
+  --brand: #3B82F6;
+  --brand-2: #60A5FA;
+  --brand-soft: #EAF2FF;
+  --bg: #F0F6FF;
+  --card: #FFFFFF;
+  --card-2: #F5F9FF;
+  --text: #1F2937;
+  --text-2: #6B7280;
+  --text-3: #9CA3AF;
+  --btn-dark: #1E3A8A;
+  --shadow: rgba(59, 130, 246, 0.14);
+}
+
+.theme-pink {
+  --brand: #EC4899;
+  --brand-2: #F472B6;
+  --brand-soft: #FDEBF4;
+  --bg: #FFF1F7;
+  --card: #FFFFFF;
+  --card-2: #FFF6FA;
+  --text: #1F2937;
+  --text-2: #6B7280;
+  --text-3: #9CA3AF;
+  --btn-dark: #9D174D;
+  --shadow: rgba(236, 72, 153, 0.14);
+}
+
+.theme-orange {
+  --brand: #F59E0B;
+  --brand-2: #FB923C;
+  --brand-soft: #FFF4EC;
+  --bg: #FFF9F5;
+  --card: #FFFFFF;
+  --card-2: #FFF7F0;
+  --text: #1F2937;
+  --text-2: #6B7280;
+  --text-3: #9CA3AF;
+  --btn-dark: #1F2937;
+  --shadow: rgba(245, 158, 11, 0.14);
+}
+
+.app {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
   font-size: 30rpx;
   font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
 }
 
 /* 通用圆角卡片 */
 .card {
-  background: #FFFFFF;
+  background: var(--card);
   border-radius: 28rpx;
   padding: 32rpx;
-  box-shadow: 0 8rpx 32rpx rgba(245, 158, 11, 0.08);
+  box-shadow: 0 8rpx 32rpx var(--shadow);
 }
 
 /* 主按钮 */
 .btn-primary {
-  background: linear-gradient(135deg, #F59E0B, #FB923C);
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
   color: #FFFFFF;
   border-radius: 44rpx;
   border: none;

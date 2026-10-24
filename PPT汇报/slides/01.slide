@@ -1,0 +1,22 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2', position: 'relative', fontFamily: 'PingFang SC, Microsoft YaHei, sans-serif' }}>
+    <Image src="assets/cover_wardrobe.png" style={{ position: 'absolute', right: 0, top: 0, width: 620, height: 720, objectFit: 'cover', clipPath: 'inset(0% 0% 0% 24%)', borderRadius: 0 }} />
+    <Box style={{ position: 'absolute', left: 70, top: 0, width: 580, height: 720, justifyContent: 'center', gap: 30 }}>
+        <Box style={{ background: 'rgba(249,115,22,0.12)', borderRadius: 24, padding: '10px 24px', alignSelf: 'flex-start' }}>
+            <Text style={{ fontSize: 20, color: '#F97316', fontWeight: 'bold', letterSpacing: 2 }}>课堂项目汇报 · 微信小程序</Text>
+        </Box>
+        <Text style={{ fontSize: 66, fontWeight: 'bold', color: '#2B2B33', lineHeight: 1.2 }}>First-Outfit<br />小白穿衣推荐</Text>
+        <Text style={{ fontSize: 24, color: '#6B6B75', lineHeight: 1.6 }}>给曾经和我一样，<br />不知道穿什么才不出错的你。</Text>
+        <Box style={{ flexDirection: 'row', alignItems: 'center', gap: 16, marginTop: 24 }}>
+            <Box style={{ width: 48, height: 6, background: '#F97316', borderRadius: 3 }} />
+            <Text style={{ fontSize: 18, color: '#6B6B75' }}>汇报人：____　|　2026 年 10 月</Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 14, marginTop: 40 }}>
+            {['小程序原生 + TS', '微信云开发', '真实天气 + AI'].map((t) => (
+                <Box key={t} style={{ background: '#FFFFFF', borderRadius: 14, padding: '10px 18px', boxShadow: '0 4px 20px rgba(43,43,51,0.08)' }}>
+                    <Text style={{ fontSize: 17, color: '#2B2B33', fontWeight: 'bold' }}>{t}</Text>
+                </Box>
+            ))}
+        </Box>
+        <Text style={{ fontSize: 15, color: '#6B6B75', marginTop: 14 }}>今日推荐 · 我的衣橱 · 客服问答 · 个性设置</Text>
+    </Box>
+</Slide>

@@ -1,9 +1,0 @@
-{
-  "name": "genOutfitImage",
-  "version": "1.0.0",
-  "description": "调用通义万相生成穿搭模特试穿图",
-  "main": "index.js",
-  "dependencies": {
-    "wx-server-sdk": "~2.6.3"
-  }
-}

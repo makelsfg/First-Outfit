@@ -1,4 +1,4 @@
-<view class="page-container">
+<view class="app theme-{{theme}} page-container">
   <!-- 工具栏 -->
   <view class="toolbar" wx:if="{{!empty}}">
     <view class="manage-btn {{managing ? 'manage-btn-active' : ''}}" bindtap="onToggleManage">管理</view>

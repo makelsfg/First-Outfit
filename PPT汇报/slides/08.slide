@@ -1,0 +1,48 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2', fontFamily: 'PingFang SC, Microsoft YaHei, sans-serif', padding: '0' }}>
+    <Box style={{ position: 'absolute', left: 70, top: 30, width: 1140, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={{ fontSize: 34, fontWeight: 'bold', color: '#2B2B33' }}>07 · 收获与展望</Text>
+        <Box style={{ background: 'rgba(249,115,22,0.12)', borderRadius: 16, padding: '6px 18px' }}>
+            <Text style={{ fontSize: 16, color: '#F97316', fontWeight: 'bold' }}>总结</Text>
+        </Box>
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, top: 108, width: 558, height: 500, background: '#FFFFFF', borderRadius: 20, padding: 28, boxShadow: '0 4px 20px rgba(43,43,51,0.08)', gap: 22 }}>
+        <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#2B2B33' }}>我学到了什么</Text>
+        {[
+            { t: '降级设计思维', d: '天气兜底、定位降级、流式降级——任何外部依赖失效都要有安全方案，用户体验不能「炸」' },
+            { t: '「规则 + AI」混合架构', d: '核心决策用确定性规则（可解释、可控），AI 只做问答兜底，各司其职' },
+            { t: '为真实用户做减法', d: '没有登录、没有社交、打开即用；功能不在多，在「真的能帮到穿衣小白」' },
+        ].map((c, i) => (
+            <Box key={i} style={{ flexDirection: 'row', gap: 16 }}>
+                <Box style={{ width: 44, height: 44, borderRadius: 22, background: '#F97316', alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 22, fontWeight: 'bold', color: '#FFFFFF' }}>{i + 1}</Text>
+                </Box>
+                <Box style={{ flex: 1, gap: 6 }}>
+                    <Text style={{ fontSize: 21, fontWeight: 'bold', color: '#2B2B33' }}>{c.t}</Text>
+                    <Text style={{ fontSize: 17, color: '#6B6B75', lineHeight: 1.5 }}>{c.d}</Text>
+                </Box>
+            </Box>
+        ))}
+    </Box>
+    <Box style={{ position: 'absolute', left: 652, top: 108, width: 558, height: 500, background: 'rgba(249,115,22,0.08)', borderRadius: 20, padding: 28, gap: 20 }}>
+        <Text style={{ fontSize: 26, fontWeight: 'bold', color: '#2B2B33' }}>下一步计划（代码已就绪，待接入口）</Text>
+        {[
+            { t: '每日穿搭打卡', d: '记录服务、去重与云数据库集合已就绪，缺首页入口按钮' },
+            { t: '个人风采库', d: '瀑布流页面与管理批量删除已完成，等接入跳转入口' },
+            { t: '意见反馈弹窗', d: '云函数与数据集合就绪，等做输入弹窗' },
+            { t: '规则持续细化', d: '更多温度带与场合组合，覆盖更极端天气' },
+        ].map((c, i) => (
+            <Box key={i} style={{ flexDirection: 'row', gap: 14, alignItems: 'center' }}>
+                <Box style={{ width: 12, height: 12, borderRadius: 6, background: '#F97316' }} />
+                <Box style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#2B2B33' }}>{c.t}</Text>
+                    <Text style={{ fontSize: 16.5, color: '#6B6B75', lineHeight: 1.45 }}>{c.d}</Text>
+                </Box>
+            </Box>
+        ))}
+        <Text style={{ fontSize: 16, color: '#6B6B75', lineHeight: 1.5 }}>工程诚实：未完成的功能不隐藏，代码保留待后续版本接入。</Text>
+    </Box>
+    <Box style={{ position: 'absolute', left: 70, bottom: 16, width: 1140, flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text style={{ fontSize: 13, color: '#9A9AA3' }}>First-Outfit · 小白穿衣推荐</Text>
+        <Text style={{ fontSize: 13, color: '#9A9AA3' }}>08 / 09</Text>
+    </Box>
+</Slide>

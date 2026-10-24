@@ -1,35 +1,28 @@
 {
   "pages": [
     "pages/home/home",
-    "pages/search/search",
-    "pages/profile/profile",
+    "pages/wardrobe/wardrobe",
+    "pages/settings/settings",
+    "pages/wardrobe/edit",
+    "pages/chat/chat",
     "pages/gallery/gallery"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#FFF9F5",
+    "navigationBarBackgroundColor": "#FFFFFF",
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "小白穿衣",
-    "backgroundColor": "#FFF9F5",
+    "backgroundColor": "#F0F6FF",
     "backgroundTextStyle": "light"
   },
   "tabBar": {
     "color": "#9CA3AF",
-    "selectedColor": "#F59E0B",
+    "selectedColor": "#1F2937",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
     "list": [
-      {
-        "pagePath": "pages/home/home",
-        "text": "今日推荐"
-      },
-      {
-        "pagePath": "pages/search/search",
-        "text": "搜索"
-      },
-      {
-        "pagePath": "pages/profile/profile",
-        "text": "我的"
-      }
+      { "pagePath": "pages/home/home", "text": "首页" },
+      { "pagePath": "pages/wardrobe/wardrobe", "text": "衣橱" },
+      { "pagePath": "pages/settings/settings", "text": "设置" }
     ]
   },
   "style": "v2",

@@ -17,7 +17,14 @@ const ENCOURAGEMENTS = [
   '不着急，好看的你会一点一点练出来的。',
 ]
 
-const COLLECTIONS = ['checkin_records', 'encouragement_library', 'feedback', 'outfit_images']
+// llm_stream：客服助手流式输出的中转集合（客户端建文档、云函数写增量、用完即删）
+const COLLECTIONS = [
+  'checkin_records',
+  'encouragement_library',
+  'feedback',
+  'wardrobe_items',
+  'llm_stream',
+]
 
 exports.main = async () => {
   const result = { collections: [], seeded: false }

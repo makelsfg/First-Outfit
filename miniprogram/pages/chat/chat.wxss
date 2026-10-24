@@ -1,0 +1,208 @@
+.chat-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.chat-list {
+  flex: 1;
+  padding: 24rpx 32rpx;
+  box-sizing: border-box;
+}
+
+/* 顶部工具条：提示 + 清空对话 */
+.chat-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12rpx 32rpx 4rpx;
+}
+
+.chat-bar-tip {
+  flex: 1;
+  min-width: 0;
+  font-size: 22rpx;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-bar-btn {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  padding: 6rpx 20rpx;
+  font-size: 22rpx;
+  line-height: 1.7;
+  color: var(--text-2);
+  background: var(--card);
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 12rpx var(--shadow);
+}
+
+.chat-bar-btn.disabled {
+  opacity: 0.4;
+}
+
+.msg {
+  display: flex;
+  margin-bottom: 24rpx;
+}
+
+.msg.user {
+  justify-content: flex-end;
+}
+
+.msg.ai {
+  justify-content: flex-start;
+}
+
+.bubble {
+  max-width: 100%;
+  padding: 20rpx 26rpx;
+  border-radius: 24rpx;
+  font-size: 28rpx;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  box-sizing: border-box;
+}
+
+/* 气泡 + 收起按钮的竖向容器，宽度上限统一收在这里 */
+.msg-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 76%;
+  min-width: 0;
+}
+
+.msg.user .msg-col {
+  align-items: flex-end;
+}
+
+/* 每条回答右下角的「收起」 */
+.fold-btn {
+  margin-top: 10rpx;
+  padding: 6rpx 20rpx;
+  font-size: 22rpx;
+  line-height: 1.6;
+  color: var(--text-3);
+  background: var(--card);
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 12rpx var(--shadow);
+}
+
+/* 收起后的一行摘要（整轮问答折叠成这一条） */
+.fold-row {
+  display: flex;
+  align-items: center;
+  max-width: 76%;
+  padding: 16rpx 22rpx;
+  border-radius: 20rpx;
+  background: var(--card-2);
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.fold-q {
+  flex: 1;
+  min-width: 0;
+  font-size: 24rpx;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fold-hint {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  font-size: 22rpx;
+  color: var(--brand);
+}
+
+.msg.user .bubble {
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: #FFFFFF;
+  border-top-right-radius: 6rpx;
+}
+
+.msg.ai .bubble {
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 6rpx 18rpx var(--shadow);
+  border-top-left-radius: 6rpx;
+}
+
+.typing {
+  color: var(--text-3);
+}
+
+/* 流式输出时的闪烁光标 */
+.caret {
+  color: var(--brand);
+  margin-left: 4rpx;
+  font-size: 28rpx;
+  animation: caret-blink 1s step-end infinite;
+}
+
+@keyframes caret-blink {
+  0%,
+  60% {
+    opacity: 1;
+  }
+  60.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* 滚动到底部的锚点（不可见） */
+.chat-anchor {
+  height: 1rpx;
+}
+
+.quick-row {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 32rpx 12rpx;
+}
+
+.quick {
+  padding: 12rpx 28rpx;
+  border-radius: 32rpx;
+  background: var(--card);
+  color: var(--text-2);
+  font-size: 26rpx;
+  margin: 0 16rpx 16rpx 0;
+  box-shadow: 0 6rpx 18rpx var(--shadow);
+}
+
+.input-bar {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 32rpx;
+  background: var(--card);
+  box-shadow: 0 -6rpx 24rpx var(--shadow);
+}
+
+.chat-input {
+  flex: 1;
+  background: var(--bg);
+  border-radius: 40rpx;
+  padding: 18rpx 28rpx;
+  font-size: 28rpx;
+  height: 76rpx;
+  box-sizing: border-box;
+}
+
+.send-btn {
+  margin-left: 16rpx;
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: #FFFFFF;
+  border-radius: 40rpx;
+  padding: 0 36rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+}

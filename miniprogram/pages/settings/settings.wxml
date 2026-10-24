@@ -1,0 +1,115 @@
+<view class="app theme-{{theme}}">
+  <view class="page-container">
+    <!-- 基本资料 -->
+    <view class="card">
+      <view class="section-title">基本资料</view>
+      <view class="form-item">
+        <text class="form-label">昵称</text>
+        <input
+          class="form-input"
+          value="{{nickname}}"
+          placeholder="怎么称呼你"
+          bindinput="onNicknameInput"
+        />
+      </view>
+      <view class="field">
+        <text class="field-label">性别</text>
+        <view class="chips">
+          <view
+            class="chip {{gender === item.key ? 'chip-active' : ''}}"
+            wx:for="{{genders}}"
+            wx:key="key"
+            data-value="{{item.key}}"
+            bindtap="onGenderTap"
+          >{{item.label}}</view>
+        </view>
+      </view>
+      <view class="field">
+        <text class="field-label">年龄段</text>
+        <view class="chips">
+          <view
+            class="chip {{ageBand === item.key ? 'chip-active' : ''}}"
+            wx:for="{{ageBands}}"
+            wx:key="key"
+            data-value="{{item.key}}"
+            bindtap="onAgeBandTap"
+          >{{item.label}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 偏好 -->
+    <view class="card">
+      <view class="section-title">穿搭偏好</view>
+      <view class="field">
+        <text class="field-label">默认场合</text>
+        <view class="chips">
+          <view
+            class="chip {{scene === item.key ? 'chip-active' : ''}}"
+            wx:for="{{scenes}}"
+            wx:key="key"
+            data-value="{{item.key}}"
+            bindtap="onSceneTap"
+          >{{item.label}}</view>
+        </view>
+      </view>
+      <view class="field">
+        <text class="field-label">怕冷程度</text>
+        <view class="chips">
+          <view
+            class="chip {{cold === item.key ? 'chip-active' : ''}}"
+            wx:for="{{colds}}"
+            wx:key="key"
+            data-value="{{item.key}}"
+            bindtap="onColdTap"
+          >{{item.label}}</view>
+        </view>
+      </view>
+      <view class="field">
+        <text class="field-label">出行方式</text>
+        <view class="chips">
+          <view
+            class="chip {{travel === item.key ? 'chip-active' : ''}}"
+            wx:for="{{travels}}"
+            wx:key="key"
+            data-value="{{item.key}}"
+            bindtap="onTravelTap"
+          >{{item.label}}</view>
+        </view>
+      </view>
+      <view class="field">
+        <text class="field-label">防雨防滑</text>
+        <view class="chips">
+          <view
+            class="chip {{rain === item.key ? 'chip-active' : ''}}"
+            wx:for="{{rains}}"
+            wx:key="key"
+            data-value="{{item.key}}"
+            bindtap="onRainTap"
+          >{{item.label}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 主题色 -->
+    <view class="card">
+      <view class="section-title">主题色</view>
+      <view class="chips">
+        <view
+          class="chip {{theme === item.key ? 'chip-active' : ''}}"
+          wx:for="{{themes}}"
+          wx:key="key"
+          data-value="{{item.key}}"
+          bindtap="onThemeTap"
+        >{{item.label}}</view>
+      </view>
+    </view>
+
+    <!-- 鼓励语 -->
+    <view class="encourage-card">
+      <text class="encourage-text">穿衣搭配没有想象中那么难。我曾经也不会，但慢慢就学会了。</text>
+    </view>
+
+    <button class="btn-primary save-btn" bindtap="onSave">保存设置</button>
+  </view>
+</view>

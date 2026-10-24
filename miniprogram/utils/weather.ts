@@ -77,5 +77,7 @@ export function getFallbackWeather(cityName?: string): WeatherInfo {
     season,
     tempMax: d.max,
     tempMin: d.min,
+    tomorrowMax: d.max,
+    tomorrowMin: d.min,
   }
 }

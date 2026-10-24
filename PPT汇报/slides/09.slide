@@ -1,0 +1,13 @@
+<Slide style={{ width: 1280, height: 720, background: '#FAF7F2', fontFamily: 'PingFang SC, Microsoft YaHei, sans-serif', padding: '0' }}>
+    <Image src="assets/ending_walk.png" style={{ position: 'absolute', right: 0, top: 0, width: 620, height: 720, objectFit: 'cover', clipPath: 'inset(0 0 0 12%)' }} />
+    <Box style={{ position: 'absolute', left: 80, top: 0, width: 560, height: 720, justifyContent: 'center', gap: 32 }}>
+        <Text style={{ fontSize: 64, fontWeight: 'bold', color: '#2B2B33', lineHeight: 1.35 }}>
+            它不教你变时尚，<br />
+            只告诉你<span style={{ color: '#F97316' }}>今天穿什么</span>，<br />
+            不会出错。
+        </Text>
+        <Box style={{ width: 64, height: 8, background: '#F97316', borderRadius: 4 }} />
+        <Text style={{ fontSize: 26, color: '#2B2B33', fontWeight: 'bold' }}>谢谢聆听 · 欢迎提问</Text>
+        <Text style={{ fontSize: 18, color: '#6B6B75', lineHeight: 1.6 }}>First-Outfit · 小白穿衣推荐<br />微信小程序原生 + TypeScript + 微信云开发</Text>
+    </Box>
+</Slide>

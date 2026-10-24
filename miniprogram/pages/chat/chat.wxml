@@ -1,0 +1,61 @@
+<view class="app theme-{{theme}} chat-page">
+  <view class="chat-bar" wx:if="{{messages.length > 1}}">
+    <text class="chat-bar-tip">聊过的内容会保留，下次进来还在</text>
+    <view class="chat-bar-btn {{loading ? 'disabled' : ''}}" bindtap="onClearChat">清空对话</view>
+  </view>
+
+  <scroll-view class="chat-list" scroll-y scroll-into-view="{{scrollInto}}" scroll-with-animation>
+    <block wx:for="{{messages}}" wx:key="index">
+      <view class="msg {{item.role}}" id="msg-{{index}}" wx:if="{{!item.hidden}}">
+        <!-- 收起状态：一行摘要，点一下展开 -->
+        <view
+          class="fold-row"
+          wx:if="{{item.folded}}"
+          data-index="{{index}}"
+          bindtap="onToggleFold"
+        >
+          <text class="fold-q">问：{{item.quote}}</text>
+          <text class="fold-hint">展开 ▾</text>
+        </view>
+
+        <view class="msg-col" wx:else>
+          <view class="bubble {{item.streaming && !item.text ? 'typing' : ''}}">
+            <text wx:if="{{item.streaming && !item.text}}">正在思考…</text>{{item.text}}<text class="caret" wx:if="{{item.streaming && item.text}}">▍</text>
+          </view>
+          <view
+            class="fold-btn"
+            wx:if="{{item.canFold && !item.streaming && item.text}}"
+            data-index="{{index}}"
+            catchtap="onToggleFold"
+          >收起 ▴</view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 追底锚点：两个交替使用，保证同样的滚动目标也能重复触发 -->
+    <view id="chat-bottom" class="chat-anchor"></view>
+    <view id="chat-bottom-alt" class="chat-anchor"></view>
+  </scroll-view>
+
+  <view class="quick-row" wx:if="{{messages.length <= 1 && !loading}}">
+    <view
+      class="quick"
+      wx:for="{{quick}}"
+      wx:key="*this"
+      data-q="{{item}}"
+      bindtap="onQuickAsk"
+    >{{item}}</view>
+  </view>
+
+  <view class="input-bar">
+    <input
+      class="chat-input"
+      value="{{input}}"
+      placeholder="问点穿搭的事…"
+      bindinput="onInput"
+      confirm-type="send"
+      bindconfirm="onSend"
+    />
+    <view class="send-btn" bindtap="onSend">发送</view>
+  </view>
+</view>

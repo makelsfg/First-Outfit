@@ -1,120 +1,122 @@
-<view class="page-container">
-  <!-- 加载态 -->
-  <view class="loading" wx:if="{{loading}}">正在为你搭配…</view>
+<view class="app theme-{{theme}}">
+  <view class="page-container">
+    <!-- 加载态 -->
+    <view class="loading" wx:if="{{loading}}">正在为你搭配…</view>
 
-  <block wx:else>
-    <!-- 天气卡片 -->
-    <view class="weather-card">
-      <view class="weather-left">
-        <view class="city-row">
-          <view class="city-name" bindtap="onOpenCitySheet">{{weather.city}}<text class="city-caret">▾</text></view>
-          <text class="city-date">· {{dateText}}</text>
+    <block wx:else>
+      <!-- 天气 Hero -->
+      <view class="hero-card">
+        <view class="hero-top">
+          <view class="hero-city" bindtap="onOpenCitySheet">{{weather.city}}<text class="caret">▾</text></view>
+          <view class="hero-refresh" bindtap="onRefresh">⟳ {{updatedAt}}</view>
         </view>
-        <view class="temp-row">
-          <text class="temp">{{weather.temp}}°</text>
-          <text class="feels">体感 {{weather.feelsLike}}°</text>
+        <view class="hero-main">
+          <text class="hero-temp">{{weather.temp}}°</text>
+          <view class="hero-weather">
+            <text class="hero-icon">{{weather.icon}}</text>
+            <text class="hero-text">{{weather.text}}</text>
+          </view>
         </view>
-        <view class="temp-range" wx:if="{{tempRangeText}}">{{tempRangeText}}</view>
+        <view class="hero-date">{{dateText}}</view>
       </view>
-      <view class="weather-right">
-        <text class="weather-icon">{{weather.icon}}</text>
-        <text class="weather-text">{{weather.text}}</text>
-      </view>
-    </view>
 
-    <!-- 穿搭方案 -->
-    <view class="card">
-      <view class="section-title">今天这样穿<text class="style-tag" wx:if="{{outfit.styleLabel}}">{{outfit.styleLabel}}</text></view>
-      <view class="outfit-item">
-        <text class="outfit-label">上衣</text>
-        <text class="outfit-value">{{outfit.top}}</text>
-      </view>
-      <view class="outfit-item" wx:if="{{outfit.inner}}">
-        <text class="outfit-label">内搭</text>
-        <text class="outfit-value">{{outfit.inner}}</text>
-      </view>
-      <view class="outfit-item">
-        <text class="outfit-label">裤子</text>
-        <text class="outfit-value">{{outfit.bottom}}</text>
-      </view>
-      <view class="outfit-item">
-        <text class="outfit-label">鞋子</text>
-        <text class="outfit-value">{{outfit.shoes}}</text>
-      </view>
-    </view>
-
-    <!-- 模特试穿 -->
-    <view class="card tryon-card">
-      <view class="section-title">模特试穿</view>
-
-      <!-- 收起态：只显示触发按钮 -->
-      <block wx:if="{{!tryonExpanded}}">
-        <view class="tryon-trigger" bindtap="onToggleTryon">{{imageUrl ? '展开试穿形象' : '✨ 生成我的试穿形象'}}</view>
-        <view class="tryon-sub" wx:if="{{!imageUrl}}">按你的穿搭生成一张模特试穿图，约需十几秒</view>
-      </block>
-
-      <!-- 展开态 -->
-      <block wx:else>
-        <view class="tryon-stage" wx:if="{{tryonStatus === 'ready'}}">
-          <image class="tryon-image" src="{{imageUrl}}" mode="widthFix" />
+      <!-- 形象 + 衣柜入口 -->
+      <view class="avatar-card">
+        <view class="avatar-body">
+          <image class="avatar-img" src="{{avatar}}" mode="aspectFit" />
+          <view class="avatar-actions">
+            <view class="avatar-gear" bindtap="onOpenSettings" aria-label="设置">⚙️</view>
+            <view class="avatar-btn" bindtap="onOpenWardrobe">👕 我的衣柜</view>
+            <view class="avatar-btn" bindtap="onAddClothing">📷 拍照录入</view>
+          </view>
         </view>
-        <view class="tryon-placeholder" wx:elif="{{tryonStatus === 'loading'}}">
-          <view class="tryon-spinner"></view>
-          <text class="tryon-hint">正在为你生成试穿形象…（约需十几秒）</text>
-        </view>
-        <view class="tryon-placeholder" wx:else>
-          <text class="tryon-hint">试穿图暂时没生成出来</text>
-          <view class="tryon-retry" bindtap="onRetryTryon">点此重试</view>
-        </view>
-
-        <view class="tryon-actions">
-          <view class="tryon-action" bindtap="onToggleTryon">收起</view>
-          <view class="tryon-action tryon-action-primary" wx:if="{{tryonStatus === 'ready'}}" bindtap="onRegenerate">换一张</view>
-        </view>
-      </block>
-    </view>
-
-    <!-- 打卡按钮 -->
-    <view class="checkin-btn {{checkedToday ? 'checkin-btn-done' : ''}}" bindtap="onCheckin">
-      <text>{{checkedToday ? '✅ 今日已打卡' : '📷 记录今日穿搭'}}</text>
-    </view>
-
-    <!-- 为什么这样穿 -->
-    <view class="card">
-      <view class="section-title">为什么这样穿</view>
-      <text class="reason-text">{{outfit.reason}}</text>
-    </view>
-
-    <!-- 特殊天气提醒 -->
-    <view class="card" wx:if="{{outfit.tips.length > 0}}">
-      <view class="section-title">小提醒</view>
-      <view class="tip-item" wx:for="{{outfit.tips}}" wx:key="*this">
-        <text class="tip-dot">·</text>
-        <text class="tip-text">{{item}}</text>
       </view>
-    </view>
-  </block>
 
-  <!-- 弹窗1：上传成功提示 -->
-  <view class="toast-mask" wx:if="{{phase === 'toast'}}">
-    <view class="toast-card {{toastFading ? 'toast-fading' : ''}}">
-      <text class="toast-text">上传成功，上传的照片可以在【我的】-【个人每日风采库】里面查看。</text>
-    </view>
+      <!-- 一句话结论 + meta -->
+      <view class="card conclusion-card">
+        <text class="summary-text">{{outfit.summary}}</text>
+        <view class="meta-row">{{metaText}}</view>
+      </view>
+
+      <!-- 时段 / 场合切换 -->
+      <view class="tabs-row">
+        <view class="slots">
+          <view
+            class="slot {{slot === item.key ? 'slot-active' : ''}}"
+            wx:for="{{slots}}"
+            wx:key="key"
+            data-key="{{item.key}}"
+            bindtap="onSelectSlot"
+          >{{item.label}}</view>
+        </view>
+        <view class="scenes">
+          <view
+            class="scene {{scene === item.key ? 'scene-active' : ''}}"
+            wx:for="{{scenes}}"
+            wx:key="key"
+            data-key="{{item.key}}"
+            bindtap="onSelectScene"
+          >{{item.label}}</view>
+        </view>
+      </view>
+
+      <!-- 今日穿搭建议 -->
+      <view class="card">
+        <view class="section-title">今日穿搭建议<text class="variant-tag" wx:if="{{outfit.variantLabel}}">{{outfit.variantLabel}}</text></view>
+        <view class="outfit-item">
+          <text class="outfit-label">上装</text>
+          <text class="outfit-value">{{outfit.top}}</text>
+        </view>
+        <view class="outfit-item" wx:if="{{outfit.coat}}">
+          <text class="outfit-label">外套</text>
+          <text class="outfit-value">{{outfit.coat}}</text>
+        </view>
+        <view class="outfit-item" wx:if="{{outfit.inner}}">
+          <text class="outfit-label">内搭</text>
+          <text class="outfit-value">{{outfit.inner}}</text>
+        </view>
+        <view class="outfit-item">
+          <text class="outfit-label">下装</text>
+          <text class="outfit-value">{{outfit.bottom}}</text>
+        </view>
+        <view class="outfit-item">
+          <text class="outfit-label">鞋子</text>
+          <text class="outfit-value">{{outfit.shoes}}</text>
+        </view>
+        <view class="next-btn" wx:if="{{outfits.length > 1}}" bindtap="onNextOutfit">
+          换一套（{{outfitIndex + 1}}/{{outfits.length}}）
+        </view>
+      </view>
+
+      <!-- 推荐理由 -->
+      <view class="card">
+        <view class="section-title">推荐理由</view>
+        <view class="reason-tag">{{outfit.sceneTag}}</view>
+        <view class="reason-point" wx:for="{{outfit.reasonPoints}}" wx:key="*this">
+          <text class="reason-dot">·</text>
+          <text class="reason-text">{{item}}</text>
+        </view>
+        <text class="disclaimer">以上建议仅供参考，请根据实际情况调整</text>
+      </view>
+
+      <!-- 小提醒 -->
+      <view class="card" wx:if="{{outfit.tips.length > 0}}">
+        <view class="section-title">小提醒</view>
+        <view class="tip-item" wx:for="{{outfit.tips}}" wx:key="*this">
+          <text class="tip-dot">·</text>
+          <text class="tip-text">{{item}}</text>
+        </view>
+      </view>
+
+    </block>
   </view>
 
-  <!-- 弹窗2：鼓励语 -->
-  <view class="encourage-mask" wx:if="{{phase === 'encourage'}}">
-    <view class="encourage-card">
-      <text class="encourage-title">今天也超棒的</text>
-      <text class="encourage-content">{{encouragementText}}</text>
-      <view class="encourage-btn" bindtap="onConfirmEncourage">确定</view>
-    </view>
-  </view>
+  <!-- 悬浮客服 -->
+  <view class="fab" bindtap="onOpenChat">💬</view>
 
   <!-- 城市选择弹层 -->
   <view class="sheet-mask" wx:if="{{citySheetVisible}}" bindtap="onCloseCitySheet">
     <view class="city-sheet" catchtap="onStopTap">
-      <!-- 省份层 -->
       <block wx:if="{{sheetLevel === 'province'}}">
         <view class="city-sheet-title">选择城市</view>
         <view class="city-item city-item-auto" bindtap="onUseAutoLocation">自动定位（当前位置）</view>
@@ -128,7 +130,6 @@
           >{{item.name}}<text class="city-arrow">›</text></view>
         </scroll-view>
       </block>
-      <!-- 城市层 -->
       <block wx:else>
         <view class="city-sheet-title city-sheet-back" bindtap="onBackToProvinces">‹ {{activeProvince.name}}</view>
         <scroll-view scroll-y class="city-list">
@@ -150,7 +151,7 @@
     <view class="guide-card">
       <text class="guide-emoji">✨</text>
       <text class="guide-title">填写基本信息，穿搭更懂你</text>
-      <text class="guide-desc">填一下性别、年龄和风格偏好，首页会为你推荐更贴合的衣服，还能生成专属的模特试穿形象。</text>
+      <text class="guide-desc">填一下性别和年龄段，首页会为你推荐更贴合的衣服。</text>
       <view class="guide-btn" bindtap="onGoProfile">去填写</view>
       <view class="guide-skip" bindtap="onSkipGuide">跳过</view>
     </view>

@@ -1,0 +1,62 @@
+<view class="app theme-{{theme}}">
+  <view class="page-container">
+    <!-- 搜索 -->
+    <view class="search-bar">
+      <text class="search-icon">🔍</text>
+      <input
+        class="search-input"
+        value="{{keyword}}"
+        placeholder="搜索衣物名称、颜色、标签"
+        bindinput="onSearchInput"
+      />
+    </view>
+
+    <!-- 类目 tab -->
+    <view class="cat-tabs">
+      <view class="cat-tab {{filter === 'all' ? 'cat-active' : ''}}" data-key="all" bindtap="onFilter">全部</view>
+      <view
+        class="cat-tab {{filter === item.key ? 'cat-active' : ''}}"
+        wx:for="{{categories}}"
+        wx:key="key"
+        data-key="{{item.key}}"
+        bindtap="onFilter"
+      >{{item.label}}</view>
+    </view>
+
+    <!-- 计数 + 添加 -->
+    <view class="count-row">
+      <text class="count-text">共 {{shown.length}} 件</text>
+      <view class="add-pill" bindtap="onAdd">＋ 添加</view>
+    </view>
+
+    <!-- 网格 -->
+    <view class="grid" wx:if="{{shown.length > 0}}">
+      <view class="item" wx:for="{{shown}}" wx:key="_id" data-id="{{item._id}}" bindtap="onEdit">
+        <view class="item-img-wrap">
+          <image class="item-img" wx:if="{{item.imageUrl}}" src="{{item.imageUrl}}" mode="aspectFill" />
+          <view class="item-img-empty" wx:else>👕</view>
+          <view class="cat-tag">{{item.categoryLabel}}</view>
+          <view
+            class="item-del"
+            data-id="{{item._id}}"
+            data-file="{{item.imageFileID}}"
+            catchtap="onDelete"
+          >✕</view>
+        </view>
+        <view class="item-body">
+          <view class="item-name">{{item.name}}</view>
+          <view class="item-tags">
+            <text class="tag" wx:for="{{item.tagLabels}}" wx:for-item="t" wx:key="*this">{{t}}</text>
+          </view>
+          <view class="item-hint" wx:if="{{item.showTagHint}}">补充标签，推荐时更容易用上它</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty" wx:else>
+      <text class="empty-text">衣柜还是空的</text>
+      <text class="empty-sub">点右上角「添加」，把衣服拍进来吧</text>
+    </view>
+  </view>
+</view>

@@ -94,20 +94,30 @@ exports.main = async (event) => {
   const temp = Number(live.temperature) || 0
   const windLevel = parseInt(String(live.windpower || '').replace(/[^0-9]/g, ''), 10) || 0
 
-  // 当天预报的最高 / 最低温（用于早晚温差建议）：extensions=all 单独查一次，失败不影响主流程
+  // 预报：今天 / 明天 的最高最低温（用于早晚温差与「明早」推荐）；失败不影响主流程
   let tempMax = null
   let tempMin = null
+  let tomorrowMax = null
+  let tomorrowMin = null
   try {
     const allRes = await httpGet(
       `https://restapi.amap.com/v3/weather/weatherInfo?key=${AMAP_KEY}&city=${adcode}&extensions=all`
     )
     const forecast = allRes.forecasts && allRes.forecasts[0]
-    const today = forecast && forecast.casts && forecast.casts[0]
+    const casts = (forecast && forecast.casts) || []
+    const today = casts[0]
+    const tomorrow = casts[1]
     if (today) {
       const dayMax = Number(today.daytemp)
       const nightMin = Number(today.nighttemp)
       if (!Number.isNaN(dayMax)) tempMax = dayMax
       if (!Number.isNaN(nightMin)) tempMin = nightMin
+    }
+    if (tomorrow) {
+      const dayMax = Number(tomorrow.daytemp)
+      const nightMin = Number(tomorrow.nighttemp)
+      if (!Number.isNaN(dayMax)) tomorrowMax = dayMax
+      if (!Number.isNaN(nightMin)) tomorrowMin = nightMin
     }
   } catch (e) {
     console.log('[getWeather] 预报获取失败：', e.message)
@@ -126,5 +136,7 @@ exports.main = async (event) => {
     season: getSeason(month),
     tempMax,
     tempMin,
+    tomorrowMax,
+    tomorrowMin,
   }
 }

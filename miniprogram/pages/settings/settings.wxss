@@ -1,0 +1,80 @@
+.card {
+  margin-bottom: 24rpx;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 20rpx;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid var(--brand-soft);
+}
+
+.form-label {
+  width: 120rpx;
+  font-size: 28rpx;
+  color: var(--text-2);
+  flex-shrink: 0;
+}
+
+.form-input {
+  flex: 1;
+  font-size: 28rpx;
+  color: var(--text);
+}
+
+.field {
+  margin-top: 24rpx;
+}
+
+.field-label {
+  display: block;
+  font-size: 26rpx;
+  color: var(--text-2);
+  margin-bottom: 14rpx;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.chip {
+  padding: 12rpx 32rpx;
+  border-radius: 36rpx;
+  background: var(--brand-soft);
+  color: var(--text-2);
+  font-size: 27rpx;
+  margin: 0 18rpx 18rpx 0;
+}
+
+.chip-active {
+  background: linear-gradient(135deg, var(--brand), var(--brand-2));
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.encourage-card {
+  background: var(--brand-soft);
+  border-radius: 28rpx;
+  padding: 40rpx 36rpx;
+  margin: 8rpx 0 32rpx;
+  text-align: center;
+}
+
+.encourage-text {
+  font-size: 28rpx;
+  color: var(--brand);
+  line-height: 1.8;
+  font-weight: 500;
+}
+
+.save-btn {
+  width: 100%;
+}
